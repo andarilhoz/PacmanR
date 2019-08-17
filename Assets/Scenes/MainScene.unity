@@ -713,12 +713,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   WallPrefab: {fileID: 220558128635861527, guid: 3a89af37fa71a5649bce97b40f6011a1,
     type: 3}
-  PointPrefab: {fileID: 7915432629596366706, guid: 5d12d997298e6f4429c51520565ad4f5,
+  PointPrefab: {fileID: 7489537679801086485, guid: 5af9dd6de411fe5449ca737d587908de,
     type: 3}
   EmptyPrefab: {fileID: 5341853948846601575, guid: e8ba761cbdf46da45b438f97d36ea263,
     type: 3}
   MegaPointPrefab: {fileID: 0}
   ThinWallPrefab: {fileID: 0}
+  PlayerPrefab: {fileID: 1047537843481019622, guid: 8eeb10c0c655f7a41942d8fa655b29bf,
+    type: 3}
 --- !u!1 &1467040943
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,8 +15,9 @@ namespace _PacmanGame.Scripts
         public GameObject EmptyPrefab;
         public GameObject MegaPointPrefab;
         public GameObject ThinWallPrefab;
+        public GameObject PlayerPrefab;
 
-        private const float TILE_OFFSET = 0.15f;
+        private const float TILE_OFFSET = 0.255f;
         
         public void GenerateMap()
         {
@@ -25,6 +26,7 @@ namespace _PacmanGame.Scripts
                 {ItemTypes.Empty, EmptyPrefab},
                 {ItemTypes.Wall, WallPrefab},
                 {ItemTypes.Point, PointPrefab},
+                {ItemTypes.PlayerPos, PlayerPrefab},
                 {ItemTypes.ThinWall, WallPrefab}
             };  
             
@@ -32,8 +34,11 @@ namespace _PacmanGame.Scripts
             VerticalFlip(jsonData);
             
             InstantiateArray(jsonData, 1, itemDictionary);
-            HorizontalFlip(jsonData);
-            InstantiateArray(jsonData, 11, itemDictionary);
+
+            var rightJson = RemoveLastColumn(jsonData);  
+            HorizontalFlip(rightJson);
+            
+            InstantiateArray(rightJson, 11, itemDictionary);
         }
 
         private void InstantiateArray(int[,] data, int offset, Dictionary<ItemTypes, GameObject> dictionary)
@@ -51,7 +56,25 @@ namespace _PacmanGame.Scripts
                 }
             }
         }
-        
+
+        private static int[,] RemoveLastColumn(int[,] inputMatrix)
+        {
+            var rows = inputMatrix.GetLength(0);
+            var cols = inputMatrix.GetLength(1);
+            var result = new int[rows, cols - 1];
+
+            for (var i = 0; i < rows; i++)
+            {
+                for (var j = 0; j < cols; j++)
+                {
+                    if ( j == cols - 1 ) continue;
+                    result[i, j] = inputMatrix[i, j];
+                }
+            }
+
+            return result;
+        }
+
         private static void VerticalFlip(int[,] inputMatrix)
         {
             var rows = inputMatrix.GetLength(0);
@@ -98,6 +121,7 @@ namespace _PacmanGame.Scripts
             Empty = 0,
             Wall = 1,
             Point = 2,
+            PlayerPos = 3,
             ThinWall = 9
         }
 
@@ -109,3 +133,4 @@ namespace _PacmanGame.Scripts
         }
     }
 }
+
