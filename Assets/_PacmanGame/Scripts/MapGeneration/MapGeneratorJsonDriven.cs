@@ -16,6 +16,7 @@ namespace _PacmanGame.Scripts
         public GameObject MegaPointPrefab;
         public GameObject ThinWallPrefab;
         public GameObject PlayerPrefab;
+        public GameObject TeleportPrefab;
 
         private const float TILE_OFFSET = 0.255f;
         
@@ -27,6 +28,7 @@ namespace _PacmanGame.Scripts
                 {ItemTypes.Wall, WallPrefab},
                 {ItemTypes.Point, PointPrefab},
                 {ItemTypes.PlayerPos, PlayerPrefab},
+                {ItemTypes.Teleport, TeleportPrefab},
                 {ItemTypes.ThinWall, WallPrefab}
             };  
             
@@ -122,6 +124,7 @@ namespace _PacmanGame.Scripts
             Wall = 1,
             Point = 2,
             PlayerPos = 3,
+            Teleport = 4,
             ThinWall = 9
         }
 
