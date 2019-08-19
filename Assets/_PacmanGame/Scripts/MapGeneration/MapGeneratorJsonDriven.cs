@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
@@ -162,10 +163,34 @@ namespace _PacmanGame.Scripts
 
         private static int[,] ReadJson()
         {
+            /* Originally mad with Newtonsoft,
+             * but since this is a no plugin/sdk project
+             * i replaced it with regex.
+             */
+            
             var mapAsset = Resources.Load<TextAsset>("map");
-            /* TODO remove newtonsoft, replace with regex */
-            var mapinfo = Newtonsoft.Json.JsonConvert.DeserializeObject<int[,]>(mapAsset.text);
-            return mapinfo;
+            
+            var rowsRegex = new Regex(@"(\[[0-9].+?([0-9].+?)(]))");
+            var columnRegex = new Regex(@"([0-9])");
+            
+            var oneLineString = mapAsset.text.Replace("\r\n", "");
+            var removeSpaces = oneLineString.Replace(" ", "");
+            
+            var matches = rowsRegex.Matches(removeSpaces);
+            var rowsSize = matches.Count;
+            var columnSize = columnRegex.Matches(matches[0].ToString()).Count;
+
+            var returnArray = new int[rowsSize, columnSize];
+            
+            for (var i = 0; i < matches.Count; i++)
+            {
+                var rowData = columnRegex.Matches(matches[i].Value);
+                for (var j = 0; j < rowData.Count; j++)
+                {
+                    returnArray[i, j] = int.Parse(rowData[j].Value);
+                }
+            }
+            return returnArray;
         }
     }
 }
