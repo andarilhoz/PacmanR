@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
+using _PacmanGame.Scripts.Pathfind;
 
 namespace _PacmanGame.Scripts
 {
@@ -12,48 +13,90 @@ namespace _PacmanGame.Scripts
 
         public GameObject WallPrefab;
         public GameObject PointPrefab;
-        public GameObject EmptyPrefab;
         public GameObject MegaPointPrefab;
         public GameObject ThinWallPrefab;
         public GameObject PlayerPrefab;
+        public GameObject BlinkyPrefab;
         public GameObject TeleportPrefab;
 
         private const float TILE_OFFSET = 0.255f;
         
-        public void GenerateMap()
+        private int[,] map;
+        private Vector2[,] realWorldPos;
+
+        public struct MapDetails
+        {
+            public int[,] mapGrid;
+            public Vector2[,] realWorldPosGrid;
+        }
+
+        public MapDetails GenerateMap()
         {
             var itemDictionary = new Dictionary<ItemTypes, GameObject>
             {
-                {ItemTypes.Empty, EmptyPrefab},
+                {ItemTypes.Empty, null},
                 {ItemTypes.Wall, WallPrefab},
                 {ItemTypes.Point, PointPrefab},
                 {ItemTypes.PlayerPos, PlayerPrefab},
                 {ItemTypes.Teleport, TeleportPrefab},
-                {ItemTypes.ThinWall, WallPrefab}
+                {ItemTypes.ThinWall, WallPrefab},
+                {ItemTypes.Blinky, BlinkyPrefab}
             };  
             
             var jsonData = ReadJson();
-            VerticalFlip(jsonData);
-            
-            InstantiateArray(jsonData, 1, itemDictionary);
-
-            var rightJson = RemoveLastColumn(jsonData);  
-            HorizontalFlip(rightJson);
-            
-            InstantiateArray(rightJson, 11, itemDictionary);
+            map = DuplicateMap(jsonData);
+            realWorldPos = new Vector2[map.GetLength(0), map.GetLength(1)];
+            InstantiateArray(map, itemDictionary);
+            return new MapDetails() { mapGrid = map, realWorldPosGrid = realWorldPos};
         }
 
-        private void InstantiateArray(int[,] data, int offset, Dictionary<ItemTypes, GameObject> dictionary)
+        private int[,] DuplicateMap(int[,] originalMap)
         {
-            for (var i = 0; i < data.GetLength(0); i++)
+            VerticalFlip(originalMap);
+            var rightJson = RemoveLastColumn(originalMap);  
+            HorizontalFlip(rightJson);
+            
+            var duplicatedMap = new int[originalMap.GetLength(0), (originalMap.GetLength(1) * 2) - 1];
+
+            //Get left side
+            for (var i = 0; i < originalMap.GetLength(0); i++)
             {
-                for (var j = 0; j < data.GetLength(1); j++)
+                for (var j = 0; j < originalMap.GetLength(1); j++)
                 {
-                    var currentTile = data[i, j];
-                    var yOffset = data.GetLength(1) * TILE_OFFSET;
-                    var xOffset = (data.GetLength(0)/2) * TILE_OFFSET;
-                    var position = new Vector2( (j * TILE_OFFSET ) + (offset * TILE_OFFSET)  - yOffset, (i * TILE_OFFSET) - xOffset );
+                    duplicatedMap[i, j] = originalMap[i, j];
+                }    
+            }
+            //Get right side
+            for (var i = 0; i < rightJson.GetLength(0); i++)
+            {
+                for (var j = 0; j < rightJson.GetLength(1); j++)
+                {
+                    duplicatedMap[i, j + originalMap.GetLength(1)] = rightJson[i, j];
+                }    
+            }
+
+            return duplicatedMap;
+        }
+
+        private void InstantiateArray(int[,] data, Dictionary<ItemTypes, GameObject> dictionary)
+        {
+            for (var row = 0; row < data.GetLength(0); row++)
+            {
+                for (var column = 0; column < data.GetLength(1); column++)
+                {
+                    var currentTile = data[row, column];
+                    if ( ((ItemTypes) currentTile).Equals(ItemTypes.Empty) ) continue;
+
+                    var yOffset = (data.GetLength(0) * TILE_OFFSET) / 2;
+                    var xOffset = (data.GetLength(1) * TILE_OFFSET) /2;
+                    
+                    var position = new Vector2( column * TILE_OFFSET - xOffset, row * TILE_OFFSET - yOffset);
+                    
+                    if ( ((ItemTypes) currentTile).Equals(ItemTypes.Empty) ) continue;
                     var item = Instantiate(dictionary[(ItemTypes) currentTile], transform, false);
+                    if(((ItemTypes) currentTile).Equals(ItemTypes.Blinky)) GetComponent<Pathfinding>().StartPosition = item.transform;
+                    if(((ItemTypes) currentTile).Equals(ItemTypes.PlayerPos)) GetComponent<Pathfinding>().TargetPosition= item.transform;
+                    realWorldPos[row, column] = position;
                     item.transform.localPosition = position;
                 }
             }
@@ -116,21 +159,11 @@ namespace _PacmanGame.Scripts
                 }
             }
         }
-        
-
-        public enum ItemTypes
-        {
-            Empty = 0,
-            Wall = 1,
-            Point = 2,
-            PlayerPos = 3,
-            Teleport = 4,
-            ThinWall = 9
-        }
 
         private static int[,] ReadJson()
         {
             var mapAsset = Resources.Load<TextAsset>("map");
+            /* TODO remove newtonsoft, replace with regex */
             var mapinfo = Newtonsoft.Json.JsonConvert.DeserializeObject<int[,]>(mapAsset.text);
             return mapinfo;
         }

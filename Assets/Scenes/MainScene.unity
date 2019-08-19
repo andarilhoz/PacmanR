@@ -666,6 +666,8 @@ GameObject:
   - component: {fileID: 1317308841}
   - component: {fileID: 1317308842}
   - component: {fileID: 1317308843}
+  - component: {fileID: 1317308844}
+  - component: {fileID: 1317308845}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -716,11 +718,11 @@ MonoBehaviour:
     type: 3}
   PointPrefab: {fileID: 7489537679801086485, guid: 5af9dd6de411fe5449ca737d587908de,
     type: 3}
-  EmptyPrefab: {fileID: 5341853948846601575, guid: e8ba761cbdf46da45b438f97d36ea263,
-    type: 3}
   MegaPointPrefab: {fileID: 0}
   ThinWallPrefab: {fileID: 0}
   PlayerPrefab: {fileID: 1047537843481019622, guid: 8eeb10c0c655f7a41942d8fa655b29bf,
+    type: 3}
+  BlinkyPrefab: {fileID: 4270252720799458573, guid: 83c5f50eb5f1abc4cb69931c40859bfd,
     type: 3}
   TeleportPrefab: {fileID: 220558128635861527, guid: dd24fc17d2a623b4a85e207b6a627f71,
     type: 3}
@@ -738,6 +740,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HighScoreText: {fileID: 80874546}
   CurrentScoreText: {fileID: 1581486013}
+--- !u!114 &1317308844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1317308839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c66bdcabfad46d28f9c3523fb15cdf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StartPosition: {fileID: 0}
+  TargetPosition: {fileID: 0}
+--- !u!114 &1317308845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1317308839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ac40850f12a4c0c8009ee5789df8d15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1467040943
 GameObject:
   m_ObjectHideFlags: 0

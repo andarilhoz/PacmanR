@@ -15,7 +15,9 @@ namespace _PacmanGame.Scripts.Score
 
         private void Awake()
         {
+            /* TODO save highscore in playerpref */
             Pacman.AddScore += UpdateScore;
+            
             UpdateScore(0);
             UpdateHighScore(0);
         }

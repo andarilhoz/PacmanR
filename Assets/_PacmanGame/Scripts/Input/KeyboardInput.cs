@@ -5,11 +5,12 @@ namespace _PacmanGame.Scripts.Input
 {
     public class KeyboardInput: MonoBehaviour, IInputControll
     {
+        public event Action<Vector2> OnInput;
+        
         private void Update()
         {
             ListenInput();
         }
-
 
         public void ListenInput()
         {
@@ -29,7 +30,5 @@ namespace _PacmanGame.Scripts.Input
 
             OnInput?.Invoke(direction);
         }
-
-        public event Action<Vector2> OnInput;
     }
 }

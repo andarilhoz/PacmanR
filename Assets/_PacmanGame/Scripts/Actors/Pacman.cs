@@ -12,8 +12,9 @@ namespace _PacmanGame.Scripts.Actors
         
         public static event Action<int> AddScore;
 
-        public void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             InputControll.OnInput += ChangeDirection;
         }
 

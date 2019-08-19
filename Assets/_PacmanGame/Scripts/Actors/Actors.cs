@@ -1,28 +1,35 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using _PacmanGame.Scripts.CustomWalls;
 
 namespace _PacmanGame.Scripts.Actors
 {
+    [RequireComponent(typeof(Rigidbody2D))]
+    [RequireComponent(typeof(Collider2D))]
     public abstract class Actors : MonoBehaviour
     {
         public float speed;
         public Vector2 currentDirection = Vector2.up;
         public Animator animator;
         
-        private const float PACMAN_WALL_OFFSET = 0.3f;
-        public Rigidbody2D rigidbody2D;
-        private Collider2D collider;
+        private const float WALL_OFFSET = 0.3f;
+        private Rigidbody2D rigidbody2D;
 
         private Vector2 lastDirectionBuffer;
         private float changeDirectionTimeout = 0.3f;
         private float lastDirectionTimeout = 0;
+
+        protected virtual void Awake()
+        {
+            rigidbody2D = GetComponent<Rigidbody2D>();
+        }
 
         private bool IsDirectionAvailable(Vector2 direction)
         {
             var hit = Physics2D.Raycast(transform.position, direction, 100f, LayerMask.GetMask("Wall"));
             if ( hit.transform == null ) return true;
             var distance = Mathf.Abs((hit.transform.localPosition - transform.localPosition).magnitude);
-            return distance > PACMAN_WALL_OFFSET;
+            return distance > WALL_OFFSET;
         }
 
         public void ChangeDirection(Vector2 direction)
@@ -75,6 +82,15 @@ namespace _PacmanGame.Scripts.Actors
             {
                 return;
             }
+
+            var teleport = other.GetComponent<Teleport>();
+            var teleportLeft = teleport.isLeft && currentDirection == Vector2.left;
+            var teleportRight = !teleport.isLeft && currentDirection == Vector2.right;
+            if ( !teleportLeft && !teleportRight )
+            {
+                return;
+            }
+            teleport.TeleportActor(this);
         }
     }
 }

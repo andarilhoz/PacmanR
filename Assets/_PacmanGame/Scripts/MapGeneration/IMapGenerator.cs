@@ -5,6 +5,6 @@ namespace _PacmanGame.Scripts
 {
     public interface IMapGenerator
     {
-        void GenerateMap();
+        MapGeneratorJsonDriven.MapDetails GenerateMap();
     }
 }
