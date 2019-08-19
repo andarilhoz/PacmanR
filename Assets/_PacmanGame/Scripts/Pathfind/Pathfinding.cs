@@ -18,7 +18,7 @@ namespace _PacmanGame.Scripts.Pathfind
         private void Update()
         {
             if ( StartPosition == null || TargetPosition == null ) return;
-            FindPath(StartPosition.position, TargetPosition.position);
+            FindPath(StartPosition.localPosition, TargetPosition.localPosition);
         }
 
         private void FindPath(Vector2 aStartPos, Vector2 aTargetPos)

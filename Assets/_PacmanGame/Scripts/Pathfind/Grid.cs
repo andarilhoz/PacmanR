@@ -45,6 +45,7 @@ namespace _PacmanGame.Scripts.Pathfind
         public Node NodeFromWorldPostiion(Vector2 worldPos)
         {
             nodes.Sort((v1,v2) =>Vector2.Distance(v1.Position,worldPos).CompareTo(Vector2.Distance(v2.Position,worldPos)));
+            var a = nodes.FindAll(n => n.gridY == 1);
             return nodes[0];
         }
 
@@ -81,14 +82,14 @@ namespace _PacmanGame.Scripts.Pathfind
         
         private Node CheckNeighboringSide(int xCheck, int yCheck)
         {
-            if ( xCheck < 0 || xCheck >= gridSizeX )
+            if ( xCheck < 0 || xCheck >= gridSizeY )
             {
                 return null;
             }
 
-            if ( yCheck >= 0 && yCheck < gridSizeY )
+            if ( yCheck >= 0 && yCheck < gridSizeX )
             {
-                return grid[xCheck, yCheck];
+                return grid[yCheck, xCheck];
             }
 
             return null;
