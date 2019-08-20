@@ -1,20 +1,43 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using _PacmanGame.Scripts.ExtensionHelpers;
+using _PacmanGame.Scripts.Pathfind;
 
 namespace _PacmanGame.Scripts.Actors.Ghosts
 {
     public class Blinky : BaseGhost
     {
-        private void Update()
+        public Vector2 BlinkyScatterPoint = new Vector2(10,10);
+
+        protected override void Awake()
         {
-            Debug.DrawLine(transform.position, PacmanTarget.transform.position, Color.green);
-            MoveTowardsPacman();
+            base.Awake();
+            scatterPoint = BlinkyScatterPoint;
         }
 
-        private void MoveTowardsPacman()
+        protected override void Start()
         {
-            var distance = (Vector2) (PacmanTarget.transform.position - transform.position);
-            var direction = distance.DirectionDecision();
+            base.Start();
+            NextState();
+        }
+
+        protected override void Intersection()
+        {
+            base.Intersection();
+            if ( !CurrentState.Equals(GhostState.Chasing) )
+            {
+                return;
+            }
+            var intersections = currentNode.nodeIntersections;
+            var node = ChooseNode(NodeDistanceFromPacman, intersections.Left, intersections.Down, intersections.Right, intersections.Up);
+            var direction = GetNodeDirection(node);
+            ChangeDirection(direction);
+        }
+
+        private float NodeDistanceFromPacman(Node node)
+        {
+            return Vector2.Distance(node.Position, PacmanTarget.transform.position);
         }
     }
 }

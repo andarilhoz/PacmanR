@@ -3,25 +3,16 @@ using UnityEngine;
 
 namespace _PacmanGame.Scripts.Pathfind
 {
-    public class Pathfinding : MonoBehaviour
+    public class Pathfinding
     {
         private Grid grid;
-        public Transform StartPosition;
-        public Transform TargetPosition;
 
-
-        private void Awake()
+        public Pathfinding(Grid grid)
         {
-            grid = GetComponent<Grid>();
+            this.grid = grid;
         }
 
-        private void Update()
-        {
-            if ( StartPosition == null || TargetPosition == null ) return;
-            FindPath(StartPosition.localPosition, TargetPosition.localPosition);
-        }
-
-        private void FindPath(Vector2 aStartPos, Vector2 aTargetPos)
+        public List<Node> FindPath(Vector2 aStartPos, Vector2 aTargetPos)
         {
             var StartNode = grid.NodeFromWorldPostiion(aStartPos);
             var TargetNode = grid.NodeFromWorldPostiion(aTargetPos);
@@ -50,7 +41,7 @@ namespace _PacmanGame.Scripts.Pathfind
                 
                 if ( CurrentNode == TargetNode )
                 {
-                    GetFinalPath(StartNode, TargetNode);
+                    break;
                 }
 
                 foreach (var neighborNode in grid.GetNeighboringNodes(CurrentNode))
@@ -71,8 +62,9 @@ namespace _PacmanGame.Scripts.Pathfind
                     }
                 }
             }
+            return GetFinalPath(StartNode, TargetNode);
         }
-        private void GetFinalPath(Node aStartNode, Node aEndNode)
+        private List<Node> GetFinalPath(Node aStartNode, Node aEndNode)
         {
             List<Node> FinalPath = new List<Node>();
             Node CurrentNode = aEndNode;
@@ -84,7 +76,8 @@ namespace _PacmanGame.Scripts.Pathfind
             }
             
             FinalPath.Reverse();
-            grid.FinalPath = FinalPath;
+            
+            return FinalPath;
         }
 
         private int GetManhattenDistance(Node nodeA, Node nodeB)

@@ -1,45 +1,108 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using _PacmanGame.Scripts.ExtensionHelpers;
 
 namespace _PacmanGame.Scripts.Pathfind
 {
-    public class Grid : MonoBehaviour
+    public class Grid
     {
+        public List<Node> FinalPath;
+        
         private Node[,] grid;
         private Vector2[,] realWorldPos;
-        public List<Node> FinalPath;
         
         private int gridSizeX;
         private int gridSizeY;
-        private List<Node> nodes = new List<Node>();
-
-        private Vector2 GridWorldSize;
+        public List<Node> nodes = new List<Node>();
         
         private const float TILE_OFFSET = 0.255f;
         
-        public void CreateGrid(int[,] map, Vector2[,] realWorldPosGrid)
+        public Grid(int[,] map, Vector2[,] realWorldPosGrid)
         {
             realWorldPos = realWorldPosGrid;
             
             gridSizeX = map.GetLength(0);
             gridSizeY = map.GetLength(1);
-            GridWorldSize = new Vector2(gridSizeX * TILE_OFFSET, gridSizeY * TILE_OFFSET);
+            
             grid = new Node[map.GetLength(0), map.GetLength(1)];
-            for (var y = 0; y < map.GetLength(0); y++)
+            
+            for (var x = 0; x < map.GetLength(0); x++)
             {
-                for (var x = 0; x < map.GetLength(1); x++)
+                for (var y = 0; y < map.GetLength(1); y++)
                 {
-                    var yOffset = (map.GetLength(0) * TILE_OFFSET) / 2;
-                    var xOffset = (map.GetLength(1) * TILE_OFFSET) /2;
-                    var nodeWorldPos = new Vector2( x * TILE_OFFSET - xOffset, y * TILE_OFFSET - yOffset);
-
-                    bool Wall = !((ItemTypes) map[y, x]).IsValidPath();
-                    var node = new Node(Wall, nodeWorldPos, x, y );
+                    var Wall = !((ItemTypes) map[x, y]).IsValidPath();
+                    var IsTeleport = ((ItemTypes) map[x, y]).Equals(ItemTypes.Teleport);
+                    var node = new Node(Wall, realWorldPosGrid[x,y], x, y);
+                    node.IsTeleport = IsTeleport;
+                    
                     nodes.Add(node);
-                    grid[y, x] = node;
+                    grid[x, y] = node;
                 }
             }
+            
+            var teleports = nodes.FindAll(n => n.IsTeleport);
+            teleports[0].TwinTeleport = teleports[1];
+            
+            for (var x = 0; x < grid.GetLength(0); x++)
+            {
+                for (var y = 0; y < grid.GetLength(1); y++)
+                {
+                    var nodeIntersections = new Node.Intersections()
+                    {
+                        Up = GetIntersection(grid, x, y, Vector2.up),
+                        Down = GetIntersection(grid, x, y, Vector2.down),
+                        Left = GetIntersection(grid, x, y, Vector2.left),
+                        Right = GetIntersection(grid, x, y, Vector2.right)
+                    };
+                    grid[x, y].nodeIntersections = nodeIntersections;
+                }
+            }
+
+            
+            
+
+        }
+
+        public Node GetIntersection(Node[,] map, int x, int y, Vector2 direction)
+        {
+            if ( direction == Vector2.up )
+            {
+                x++;
+            }
+
+            if ( direction == Vector2.down )
+            {
+                x--;
+            }
+            
+            if ( direction == Vector2.left )
+            {
+                y--;
+            }
+
+            if ( direction == Vector2.right )
+            {
+                y++;
+            }
+
+            if ( y < 0 || y >= map.GetLength(1))
+            {
+                return null;
+            }
+
+            if ( x < 0 || x >= map.GetLength(0))
+            {
+                return null;
+            }
+
+            if ( map[x, y].IsWall )
+            {
+                return null;
+            }
+
+            return map[x, y];
+
         }
 
         public Node NodeFromWorldPostiion(Vector2 worldPos)
@@ -76,7 +139,6 @@ namespace _PacmanGame.Scripts.Pathfind
             yCheck = aNode.gridY - 1;
             
             NeighboringNodes.AddIfNotNull(CheckNeighboringSide(xCheck, yCheck));
-
             return NeighboringNodes;
         }
         
@@ -89,42 +151,12 @@ namespace _PacmanGame.Scripts.Pathfind
 
             if ( yCheck >= 0 && yCheck < gridSizeX )
             {
-                return grid[yCheck, xCheck];
+                return grid[xCheck,yCheck];
             }
 
             return null;
         }
 
-        private void OnDrawGizmos()
-        {
-            Gizmos.DrawCube(transform.position, new Vector3(gridSizeX, 1, gridSizeY));
-            if ( grid == null )
-            {
-                return;
-            }
-
-            foreach (var node in grid)
-            {
-                if ( node.IsWall )
-                {
-                    Gizmos.color = Color.white;
-                }
-                else
-                {
-                    Gizmos.color = Color.yellow;
-                }
-
-                if (FinalPath != null)//If the final path is not empty
-                {
-                    if (FinalPath.Contains(node))//If the current node is in the final path
-                    {
-                        Gizmos.color = Color.red;//Set the color of that node
-                    }
-
-                }
-
-                Gizmos.DrawCube(node.Position, Vector3.one * TILE_OFFSET);
-            }
-        }
+       
     }
 }

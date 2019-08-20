@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 60924029654372655}
   - component: {fileID: 1645728807646778324}
   - component: {fileID: 9121520247163270113}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: teleport
   m_TagString: Teleport
   m_Icon: {fileID: 0}
@@ -70,3 +70,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 296f0e4ba30141d088362f6f2e8b0a93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  twin: {fileID: 0}
+  isLeft: 0

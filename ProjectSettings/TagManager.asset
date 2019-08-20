@@ -7,6 +7,7 @@ TagManager:
   - Wall
   - Dot
   - Teleport
+  - PowerDot
   layers:
   - Default
   - TransparentFX
@@ -17,8 +18,8 @@ TagManager:
   - 
   - 
   - Wall
-  - 
-  - 
+  - Actors
+  - Teleport
   - 
   - 
   - 

@@ -14,16 +14,13 @@ namespace _PacmanGame.Scripts
 
         public GameObject WallPrefab;
         public GameObject PointPrefab;
-        public GameObject MegaPointPrefab;
+        public GameObject PowerDotPrefab;
         public GameObject ThinWallPrefab;
         public GameObject PlayerPrefab;
         public GameObject BlinkyPrefab;
         public GameObject TeleportPrefab;
 
         private const float TILE_OFFSET = 0.255f;
-        
-        private int[,] map;
-        private Vector2[,] realWorldPos;
 
         public struct MapDetails
         {
@@ -33,22 +30,42 @@ namespace _PacmanGame.Scripts
 
         public MapDetails GenerateMap()
         {
+            var jsonData = ReadJson();
+            var map = DuplicateMap(jsonData);
+            return new MapDetails() { mapGrid = map, realWorldPosGrid = GetRealWorldPosMap(map)};
+        }
+
+        private Vector2[,] GetRealWorldPosMap(int[,] map)
+        {
+            var realWorldPos = new Vector2[map.GetLength(0), map.GetLength(1)];
+            for (var row = 0; row < map.GetLength(0); row++)
+            {
+                for (var column = 0; column < map.GetLength(1); column++)
+                {
+                    var pos = position(map, column, row);
+                    realWorldPos[row, column] = pos;
+                }
+            }
+
+            return realWorldPos;
+        }
+
+        public void InstantiateMap(int[,] map, Vector2[,] realWorldPos)
+        {
             var itemDictionary = new Dictionary<ItemTypes, GameObject>
             {
                 {ItemTypes.Empty, null},
                 {ItemTypes.Wall, WallPrefab},
                 {ItemTypes.Point, PointPrefab},
+                {ItemTypes.PowerDot, PowerDotPrefab},
                 {ItemTypes.PlayerPos, PlayerPrefab},
                 {ItemTypes.Teleport, TeleportPrefab},
                 {ItemTypes.ThinWall, WallPrefab},
                 {ItemTypes.Blinky, BlinkyPrefab}
             };  
+
             
-            var jsonData = ReadJson();
-            map = DuplicateMap(jsonData);
-            realWorldPos = new Vector2[map.GetLength(0), map.GetLength(1)];
-            InstantiateArray(map, itemDictionary);
-            return new MapDetails() { mapGrid = map, realWorldPosGrid = realWorldPos};
+            InstantiateArray(map, realWorldPos, itemDictionary);
         }
 
         private int[,] DuplicateMap(int[,] originalMap)
@@ -78,27 +95,28 @@ namespace _PacmanGame.Scripts
 
             return duplicatedMap;
         }
+        
+        private Vector2 position(int[,] data, int column, int row)
+        {
+            var yOffset = (data.GetLength(0) * TILE_OFFSET) / 2;
+            var xOffset = (data.GetLength(1) * TILE_OFFSET) /2;
+                    
+            return new Vector2( column * TILE_OFFSET - xOffset, row * TILE_OFFSET - yOffset);
+        }
 
-        private void InstantiateArray(int[,] data, Dictionary<ItemTypes, GameObject> dictionary)
+        private void InstantiateArray(int[,] data, Vector2[,] realWorldPos, Dictionary<ItemTypes, GameObject> dictionary)
         {
             for (var row = 0; row < data.GetLength(0); row++)
             {
                 for (var column = 0; column < data.GetLength(1); column++)
                 {
                     var currentTile = data[row, column];
-                    if ( ((ItemTypes) currentTile).Equals(ItemTypes.Empty) ) continue;
-
-                    var yOffset = (data.GetLength(0) * TILE_OFFSET) / 2;
-                    var xOffset = (data.GetLength(1) * TILE_OFFSET) /2;
-                    
-                    var position = new Vector2( column * TILE_OFFSET - xOffset, row * TILE_OFFSET - yOffset);
                     
                     if ( ((ItemTypes) currentTile).Equals(ItemTypes.Empty) ) continue;
+                    if ( ((ItemTypes) currentTile).Equals(ItemTypes.Empty) ) continue;
+                    
                     var item = Instantiate(dictionary[(ItemTypes) currentTile], transform, false);
-                    if(((ItemTypes) currentTile).Equals(ItemTypes.Blinky)) GetComponent<Pathfinding>().StartPosition = item.transform;
-                    if(((ItemTypes) currentTile).Equals(ItemTypes.PlayerPos)) GetComponent<Pathfinding>().TargetPosition= item.transform;
-                    realWorldPos[row, column] = position;
-                    item.transform.localPosition = position;
+                    item.transform.localPosition = realWorldPos[row, column];
                 }
             }
         }

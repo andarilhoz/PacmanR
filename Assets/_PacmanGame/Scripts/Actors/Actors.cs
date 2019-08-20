@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using _PacmanGame.Scripts.CustomWalls;
+using _PacmanGame.Scripts.Pathfind;
 
 namespace _PacmanGame.Scripts.Actors
 {
@@ -8,36 +9,40 @@ namespace _PacmanGame.Scripts.Actors
     [RequireComponent(typeof(Collider2D))]
     public abstract class Actors : MonoBehaviour
     {
+        public Node previousNode;
+        public Node currentNode;
+        public Node nextNode;
+        
         public float speed;
+        protected float currentSpeed;
         public Vector2 currentDirection = Vector2.up;
         public Animator animator;
         
-        private const float WALL_OFFSET = 0.3f;
-        private Rigidbody2D rigidbody2D;
+        private Rigidbody2D rb2D;
 
-        private Vector2 lastDirectionBuffer;
+        protected Vector2 lastDirectionBuffer;
         private float changeDirectionTimeout = 0.3f;
         private float lastDirectionTimeout = 0;
 
         protected virtual void Awake()
         {
-            rigidbody2D = GetComponent<Rigidbody2D>();
+            rb2D = GetComponent<Rigidbody2D>();
+            currentNode = LevelManager.LevelGrid.NodeFromWorldPostiion(transform.position);
         }
 
-        private bool IsDirectionAvailable(Vector2 direction)
+        protected virtual void Start()
         {
-            var hit = Physics2D.Raycast(transform.position, direction, 100f, LayerMask.GetMask("Wall"));
-            if ( hit.transform == null ) return true;
-            var distance = Mathf.Abs((hit.transform.localPosition - transform.localPosition).magnitude);
-            return distance > WALL_OFFSET;
+            animator.SetFloat("DirX", currentDirection.x);
+            animator.SetFloat("DirY", currentDirection.y);
+            currentSpeed = speed;
         }
 
-        public void ChangeDirection(Vector2 direction)
+        public virtual void ChangeDirection(Vector2 direction)
         {
+            if ( direction == currentDirection ) return;
+            
             lastDirectionBuffer = direction;
             if(lastDirectionTimeout <= 0 )lastDirectionTimeout = changeDirectionTimeout;
-            if ( direction == currentDirection ) return;
-
             if ( !IsDirectionAvailable(direction) )
             {
                 return;
@@ -47,11 +52,74 @@ namespace _PacmanGame.Scripts.Actors
             animator.SetFloat("DirX", direction.x);
             animator.SetFloat("DirY", direction.y);
         }
-
-        private void FixedUpdate()
+        
+        protected bool IsDirectionAvailable(Vector2 direction)
         {
+            
+            if ( direction == Vector2.left )
+            {
+                return currentNode.nodeIntersections.Left != null;
+            }
+            
+            if ( direction == Vector2.right )
+            {
+                return currentNode.nodeIntersections.Right != null;
+            }
+            
+            if ( direction == Vector2.up )
+            {
+                return currentNode.nodeIntersections.Up != null;
+            }
+            
+            if ( direction == Vector2.down )
+            {
+                return currentNode.nodeIntersections.Down != null;
+            }
+
+            return false;
+        }
+
+        protected void FixedUpdate()
+        {
+            GetCurrentNode();
             TryAgainChangeDirection();
+            SetNextNode();
             MoveActor();
+        }
+
+        private void GetCurrentNode()
+        {
+            
+            var newNode = LevelManager.LevelGrid.NodeFromWorldPostiion(transform.position);
+            if ( Equals(newNode, currentNode) )
+            {
+                return;
+            }
+            previousNode = currentNode;
+            currentNode = newNode;
+        }
+
+        private void SetNextNode()
+        {
+            if ( currentDirection == Vector2.left )
+            {
+                nextNode = currentNode.nodeIntersections.Left;
+            }
+            
+            if ( currentDirection == Vector2.right )
+            {
+                nextNode = currentNode.nodeIntersections.Right;
+            }
+            
+            if ( currentDirection == Vector2.up )
+            {
+                nextNode = currentNode.nodeIntersections.Up;
+            }
+            
+            if ( currentDirection == Vector2.down )
+            {
+                nextNode = currentNode.nodeIntersections.Down;
+            }
         }
 
         private void TryAgainChangeDirection()
@@ -67,30 +135,25 @@ namespace _PacmanGame.Scripts.Actors
 
         private void MoveActor()
         {
-            if ( !IsDirectionAvailable(currentDirection) )
+            if ( currentNode.IsTeleport )
             {
-                rigidbody2D.velocity = Vector2.zero;
-                return;
+                var teleportLeft = currentNode.isLeft && currentDirection == Vector2.left;
+                var teleportRight = !currentNode.isLeft && currentDirection == Vector2.right;
+                if ( teleportLeft || teleportRight )
+                {
+                    transform.position = currentNode.TwinTeleport.Position;    
+                }
             }
 
-            rigidbody2D.velocity = currentDirection * speed;
+            var target = nextNode ?? currentNode;
+
+            Vector3 movePosition = transform.position;
+ 
+            movePosition.x = Mathf.MoveTowards(transform.position.x, target.Position.x , currentSpeed * Time.deltaTime);
+            movePosition.y = Mathf.MoveTowards(transform.position.y, target.Position.y , currentSpeed * Time.deltaTime);
+ 
+            rb2D.MovePosition(movePosition);
         }
 
-        private void OnTriggerExit2D(Collider2D other)
-        {
-            if ( !other.CompareTag("Teleport") )
-            {
-                return;
-            }
-
-            var teleport = other.GetComponent<Teleport>();
-            var teleportLeft = teleport.isLeft && currentDirection == Vector2.left;
-            var teleportRight = !teleport.isLeft && currentDirection == Vector2.right;
-            if ( !teleportLeft && !teleportRight )
-            {
-                return;
-            }
-            teleport.TeleportActor(this);
-        }
     }
 }
