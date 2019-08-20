@@ -45,3 +45,6 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Actors
+    uniqueID: 1132065621
+    locked: 0
