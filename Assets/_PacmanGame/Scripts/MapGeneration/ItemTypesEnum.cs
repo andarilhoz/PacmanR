@@ -26,6 +26,8 @@ namespace _PacmanGame.Scripts
                     return true;
                 case ItemTypes.Inky:
                     return true;
+                case ItemTypes.Clyde:
+                    return true;
                 default:
                     return false;
             }
@@ -42,7 +44,9 @@ namespace _PacmanGame.Scripts
         Blinky = 5,
         Pinky = 7,
         Inky = 8,
+        Clyde = 10,
         PowerDot = 6,
-        ThinWall = 9
+        ThinWall = 9,
+        FruitSpawn = 11,
     }
 }

@@ -20,6 +20,7 @@ namespace _PacmanGame.Scripts
         public GameObject BlinkyPrefab;
         public GameObject PinkyPrefab;
         public GameObject InkyPrefab;
+        public GameObject ClydePrefab;
         public GameObject TeleportPrefab;
 
         private const float TILE_OFFSET = 0.255f;
@@ -65,7 +66,8 @@ namespace _PacmanGame.Scripts
                 {ItemTypes.ThinWall, ThinWallPrefab},
                 {ItemTypes.Blinky, BlinkyPrefab},
                 {ItemTypes.Pinky, PinkyPrefab},
-                {ItemTypes.Inky, InkyPrefab}
+                {ItemTypes.Inky, InkyPrefab},
+                {ItemTypes.Clyde, ClydePrefab}
             };  
 
             
@@ -194,7 +196,7 @@ namespace _PacmanGame.Scripts
             var mapAsset = Resources.Load<TextAsset>("map");
             
             var rowsRegex = new Regex(@"(\[[0-9].+?([0-9].+?)(]))");
-            var columnRegex = new Regex(@"([0-9])");
+            var columnRegex = new Regex(@"\d+");
             
             var oneLineString = mapAsset.text.Replace("\r\n", "");
             var removeSpaces = oneLineString.Replace(" ", "");

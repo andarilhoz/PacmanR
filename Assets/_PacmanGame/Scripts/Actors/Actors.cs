@@ -86,7 +86,7 @@ namespace _PacmanGame.Scripts.Actors
             MoveActor();
         }
 
-        private void GetCurrentNode()
+        protected virtual void GetCurrentNode()
         {
             
             var newNode = LevelManager.LevelGrid.NodeFromWorldPostiion(transform.position);

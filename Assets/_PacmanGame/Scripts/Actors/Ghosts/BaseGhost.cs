@@ -24,10 +24,14 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
 
         protected float modeTimer = Mathf.Infinity;
         protected int stateIteraction = 0;
+
+
+        private float changedStateTimer = 0;
+        private float changedStateCoolDown = .5f; 
          
         protected (GhostState, float)[] StateTimers = new (GhostState, float)[]
         {
-            (GhostState.Scatter, 8),
+            (GhostState.Scatter, 7),
             (GhostState.Chasing, 20),
             (GhostState.Scatter, 7),
             (GhostState.Chasing, 20),
@@ -73,6 +77,12 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
         {
             if ( newState == CurrentState )
             {
+                if ( newState.Equals(GhostState.Afraid) )
+                {
+                    animator.SetBool("AfraidLowTime", false);
+                    modeTimer = AfraidTime;
+                }
+
                 return;
             }
 
@@ -95,7 +105,7 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
             }
 
             ChangeDirection(GetNodeDirection(previousNode));
-            
+            changedStateTimer = changedStateCoolDown;
             switch (newState)
             {
                 case GhostState.Locked:
@@ -143,6 +153,15 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
             choosedPath = true;
             Intersection();
         }
+        
+        protected override void GetCurrentNode()
+        {
+            if ( changedStateTimer > 0 )
+            {
+                return;
+            }
+            base.GetCurrentNode();
+        }
 
         private void UpdateStateTimer()
         {
@@ -150,7 +169,12 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
             {
                 animator.SetBool("AfraidLowTime", true);
             }
-            
+
+            if ( changedStateTimer > 0 )
+            {
+                changedStateTimer -= Time.deltaTime;
+            }
+
             if ( modeTimer > 0 )
             {
                 modeTimer -= Time.deltaTime;
@@ -272,7 +296,7 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
             ChangeDirection(Vector2.right);
         }
 
-        private float NodeDistanceFromScatterPoint(Node node)
+        protected float NodeDistanceFromScatterPoint(Node node)
         {
             return Vector2.Distance(node.Position, scatterPoint);
         }

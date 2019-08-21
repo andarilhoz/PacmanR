@@ -852,7 +852,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MapGenerator: {fileID: 1317308842}
   ghostComboText: {fileID: 22670049}
-  comboTextShowingTime: 0
 --- !u!114 &1317308842
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -876,6 +875,10 @@ MonoBehaviour:
   PlayerPrefab: {fileID: 1047537843481019622, guid: 8eeb10c0c655f7a41942d8fa655b29bf,
     type: 3}
   BlinkyPrefab: {fileID: 4270252720799458573, guid: 83c5f50eb5f1abc4cb69931c40859bfd,
+    type: 3}
+  PinkyPrefab: {fileID: 4270252720799458573, guid: be4ed17a7403bf3458eda326c5087b3b,
+    type: 3}
+  InkyPrefab: {fileID: 4270252720799458573, guid: b834ac734f3ab7b4f9315569ebf078eb,
     type: 3}
   TeleportPrefab: {fileID: 220558128635861527, guid: dd24fc17d2a623b4a85e207b6a627f71,
     type: 3}
