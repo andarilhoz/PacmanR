@@ -880,6 +880,8 @@ MonoBehaviour:
     type: 3}
   InkyPrefab: {fileID: 4270252720799458573, guid: b834ac734f3ab7b4f9315569ebf078eb,
     type: 3}
+  ClydePrefab: {fileID: 4270252720799458573, guid: 0d9e3ccb37d0e1d4aba1799b595f194e,
+    type: 3}
   TeleportPrefab: {fileID: 220558128635861527, guid: dd24fc17d2a623b4a85e207b6a627f71,
     type: 3}
 --- !u!114 &1317308843
