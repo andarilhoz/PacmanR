@@ -1,17 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using UnityEditor;
 using UnityEngine;
-using _PacmanGame.Scripts.Pathfind;
 
 namespace _PacmanGame.Scripts
 {
     [System.Serializable]
-    public class MapGeneratorJsonDriven : MonoBehaviour, IMapGenerator
+    public class MapGenerator : MonoBehaviour
     {
-
         public GameObject WallPrefab;
         public GameObject PointPrefab;
         public GameObject PowerDotPrefab;
@@ -23,19 +18,13 @@ namespace _PacmanGame.Scripts
         public GameObject ClydePrefab;
         public GameObject TeleportPrefab;
 
-        private const float TILE_OFFSET = 0.255f;
+        public const float TILE_OFFSET = 0.255f;
 
-        public struct MapDetails
-        {
-            public int[,] mapGrid;
-            public Vector2[,] realWorldPosGrid;
-        }
-
-        public MapDetails GenerateMap()
+        public (int[,], Vector2[,]) GenerateMap()
         {
             var jsonData = ReadJson();
             var map = DuplicateMap(jsonData);
-            return new MapDetails() { mapGrid = map, realWorldPosGrid = GetRealWorldPosMap(map)};
+            return (map, GetRealWorldPosMap(map));
         }
 
         private Vector2[,] GetRealWorldPosMap(int[,] map)
@@ -68,19 +57,19 @@ namespace _PacmanGame.Scripts
                 {ItemTypes.Pinky, PinkyPrefab},
                 {ItemTypes.Inky, InkyPrefab},
                 {ItemTypes.Clyde, ClydePrefab}
-            };  
+            };
 
-            
+
             InstantiateArray(map, realWorldPos, itemDictionary);
         }
 
-        private int[,] DuplicateMap(int[,] originalMap)
+        private static int[,] DuplicateMap(int[,] originalMap)
         {
             VerticalFlip(originalMap);
-            var rightJson = RemoveLastColumn(originalMap);  
+            var rightJson = RemoveLastColumn(originalMap);
             HorizontalFlip(rightJson);
-            
-            var duplicatedMap = new int[originalMap.GetLength(0), (originalMap.GetLength(1) * 2) - 1];
+
+            var duplicatedMap = new int[originalMap.GetLength(0), originalMap.GetLength(1) * 2 - 1];
 
             //Get left side
             for (var i = 0; i < originalMap.GetLength(0); i++)
@@ -88,8 +77,9 @@ namespace _PacmanGame.Scripts
                 for (var j = 0; j < originalMap.GetLength(1); j++)
                 {
                     duplicatedMap[i, j] = originalMap[i, j];
-                }    
+                }
             }
+
             //Get right side
             for (var i = 0; i < rightJson.GetLength(0); i++)
             {
@@ -97,31 +87,39 @@ namespace _PacmanGame.Scripts
                 {
                     var value = ((ItemTypes) rightJson[i, j]).IsGhost() ? 0 : rightJson[i, j];
                     duplicatedMap[i, j + originalMap.GetLength(1)] = value;
-                }    
+                }
             }
 
             return duplicatedMap;
         }
-        
-        private Vector2 position(int[,] data, int column, int row)
+
+        private static Vector2 position(int[,] data, int column, int row)
         {
-            var yOffset = (data.GetLength(0) * TILE_OFFSET) / 2;
-            var xOffset = (data.GetLength(1) * TILE_OFFSET) /2;
-                    
-            return new Vector2( column * TILE_OFFSET - xOffset, row * TILE_OFFSET - yOffset);
+            var yOffset = data.GetLength(0) * TILE_OFFSET / 2;
+            var xOffset = data.GetLength(1) * TILE_OFFSET / 2;
+
+            return new Vector2(column * TILE_OFFSET - xOffset, row * TILE_OFFSET - yOffset);
         }
 
-        private void InstantiateArray(int[,] data, Vector2[,] realWorldPos, Dictionary<ItemTypes, GameObject> dictionary)
+        private void InstantiateArray(int[,] data, Vector2[,] realWorldPos,
+            IReadOnlyDictionary<ItemTypes, GameObject> dictionary)
         {
             for (var row = 0; row < data.GetLength(0); row++)
             {
                 for (var column = 0; column < data.GetLength(1); column++)
                 {
                     var currentTile = data[row, column];
-                    
-                    if ( ((ItemTypes) currentTile).Equals(ItemTypes.Empty) ) continue;
-                    if ( ((ItemTypes) currentTile).Equals(ItemTypes.Empty) ) continue;
-                    
+
+                    if ( ((ItemTypes) currentTile).Equals(ItemTypes.Empty) )
+                    {
+                        continue;
+                    }
+
+                    if ( ((ItemTypes) currentTile).Equals(ItemTypes.Empty) )
+                    {
+                        continue;
+                    }
+
                     var item = Instantiate(dictionary[(ItemTypes) currentTile], transform, false);
                     item.transform.localPosition = realWorldPos[row, column];
                 }
@@ -138,7 +136,11 @@ namespace _PacmanGame.Scripts
             {
                 for (var j = 0; j < cols; j++)
                 {
-                    if ( j == cols - 1 ) continue;
+                    if ( j == cols - 1 )
+                    {
+                        continue;
+                    }
+
                     result[i, j] = inputMatrix[i, j];
                 }
             }
@@ -150,36 +152,36 @@ namespace _PacmanGame.Scripts
         {
             var rows = inputMatrix.GetLength(0);
             var cols = inputMatrix.GetLength(1);
-    
-            for(var i = 0 ;i<= cols-1;i++)
+
+            for (var i = 0; i <= cols - 1; i++)
             {
                 var j = 0;
-                var k= rows-1;
-                while(j<k)
+                var k = rows - 1;
+                while (j < k)
                 {
-                    var temp = inputMatrix[j,i];
-                    inputMatrix[j,i] = inputMatrix[k,i];
-                    inputMatrix[k,i] = temp;
+                    var temp = inputMatrix[j, i];
+                    inputMatrix[j, i] = inputMatrix[k, i];
+                    inputMatrix[k, i] = temp;
                     j++;
                     k--;
                 }
             }
         }
-        
+
         private static void HorizontalFlip(int[,] inputMatrix)
         {
             var rows = inputMatrix.GetLength(0);
             var cols = inputMatrix.GetLength(1);
-    
-            for(var i = 0 ;i<= rows-1;i++)
+
+            for (var i = 0; i <= rows - 1; i++)
             {
                 var j = 0;
-                var k= cols-1;
-                while(j<k)
+                var k = cols - 1;
+                while (j < k)
                 {
-                    var temp = inputMatrix[i,j];
-                    inputMatrix[i,j] = inputMatrix[i,k];
-                    inputMatrix[i,k] = temp;
+                    var temp = inputMatrix[i, j];
+                    inputMatrix[i, j] = inputMatrix[i, k];
+                    inputMatrix[i, k] = temp;
                     j++;
                     k--;
                 }
@@ -192,21 +194,21 @@ namespace _PacmanGame.Scripts
              * but since this is a no plugin/sdk project
              * i replaced it with regex.
              */
-            
+
             var mapAsset = Resources.Load<TextAsset>("map");
-            
+
             var rowsRegex = new Regex(@"(\[[0-9].+?([0-9].+?)(]))");
             var columnRegex = new Regex(@"\d+");
-            
+
             var oneLineString = mapAsset.text.Replace("\r\n", "");
             var removeSpaces = oneLineString.Replace(" ", "");
-            
+
             var matches = rowsRegex.Matches(removeSpaces);
             var rowsSize = matches.Count;
             var columnSize = columnRegex.Matches(matches[0].ToString()).Count;
 
             var returnArray = new int[rowsSize, columnSize];
-            
+
             for (var i = 0; i < matches.Count; i++)
             {
                 var rowData = columnRegex.Matches(matches[i].Value);
@@ -215,8 +217,8 @@ namespace _PacmanGame.Scripts
                     returnArray[i, j] = int.Parse(rowData[j].Value);
                 }
             }
+
             return returnArray;
         }
     }
 }
-

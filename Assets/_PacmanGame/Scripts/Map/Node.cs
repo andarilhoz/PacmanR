@@ -2,17 +2,27 @@ using UnityEngine;
 
 namespace _PacmanGame.Scripts.Pathfind
 {
+    [System.Serializable]
     public class Node
     {
-        public int gridX;
-        public int gridY;
+        private int gridX;
+        private int gridY;
 
-        public bool IsWall;
+        public readonly bool IsWall;
         public bool IsTeleport;
         private Node twinTeleport;
+
+        public bool isLeft;
+
+        public Vector2 Position;
+
+        public Intersections nodeIntersections;
+        public bool ThinWall = false;
+
+
         public Node TwinTeleport
         {
-            get { return twinTeleport; }
+            get => twinTeleport;
             set
             {
                 value.twinTeleport = this;
@@ -20,6 +30,14 @@ namespace _PacmanGame.Scripts.Pathfind
                 isLeft = Position.x < value.Position.x;
                 twinTeleport = value;
             }
+        }
+
+        public Node(bool isWall, Vector2 aPos, int aGridX, int aGridY)
+        {
+            Position = aPos;
+            IsWall = isWall;
+            gridX = aGridX;
+            gridY = aGridY;
         }
 
         public bool IsIntersection
@@ -30,27 +48,6 @@ namespace _PacmanGame.Scripts.Pathfind
                 var vertical = nodeIntersections.Up != null || nodeIntersections.Down != null;
                 return horizontal && vertical;
             }
-        }
-
-        public bool isLeft;
-        
-        public Vector2 Position;
-
-        public Node Parent;
-
-        public int gCost;
-        public int hCost;
-        public int FCost => gCost + hCost;
-        public Intersections nodeIntersections;
-        public bool ThinWall = false;
-
-    
-        public Node(bool isWall, Vector2 aPos, int aGridX, int aGridY)
-        {
-            Position = aPos;
-            IsWall = isWall;
-            gridX = aGridX;
-            gridY = aGridY;
         }
 
         public class Intersections

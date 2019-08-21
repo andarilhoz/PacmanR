@@ -115,7 +115,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc4f02b7bd73492fb75662cefcf6982a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2
+  baseSpeed: 2
   currentDirection: {x: -1, y: 0}
   animator: {fileID: 1047537843481019623}
   isAlive: 0

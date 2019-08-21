@@ -12,14 +12,14 @@ namespace _PacmanGame.Scripts.Actors
     {
         public bool isAlive;
         public KeyboardInput InputControll;
-        
+
         public static event Action EatPowerDot;
         public static event Action<int> AddScore;
 
         public float ghostEatComboTimer = 2f;
         private float comboTimer = 0;
         private int comboCounter = 0;
-        private int[] comboValues = new[] {200, 400, 800, 1600};
+        private readonly int[] comboValues = {200, 400, 800, 1600};
 
         protected override void Awake()
         {
@@ -28,7 +28,18 @@ namespace _PacmanGame.Scripts.Actors
             BaseGhost.TouchGhost += TouchedGhost;
         }
 
+        protected override void Start()
+        {
+            base.Start();
+            ChangeDirection(currentDirection);
+        }
+
         private void Update()
+        {
+            ComboTimerChecker();
+        }
+
+        private void ComboTimerChecker()
         {
             if ( comboCounter <= 0 )
             {
@@ -42,17 +53,17 @@ namespace _PacmanGame.Scripts.Actors
             }
 
             comboTimer -= Time.deltaTime;
-            
         }
 
-        private void TouchedGhost(GhostState ghostState)
+        private void TouchedGhost(GhostStates ghostStates)
         {
-            if ( ghostState.Equals(GhostState.Afraid))
+            if ( ghostStates.Equals(GhostStates.Afraid) )
             {
                 EatGhost();
                 return;
             }
-            
+
+            // TODO do death
             Debug.Log("Ouch i'm dead");
         }
 
@@ -60,23 +71,8 @@ namespace _PacmanGame.Scripts.Actors
         {
             comboTimer = ghostEatComboTimer;
             comboCounter++;
-            LevelManager.Instance.SetComboText(comboValues[comboCounter -1].ToString(), transform.position);
-            AddScore?.Invoke(comboValues[comboCounter -1 ]);
-        }
-
-        protected override void Start()
-        {
-            base.Start();
-            ChangeDirection(currentDirection);
-        }
-
-        private void OnDrawGizmos()
-        {
-            if ( currentNode != null )
-            {
-                Gizmos.color = Color.red;
-                Gizmos.DrawCube(currentNode.Position, Vector2.one * .255f);
-            }
+            ScoreManager.Instance.SetComboText(comboValues[comboCounter - 1].ToString(), transform.position);
+            AddScore?.Invoke(comboValues[comboCounter - 1]);
         }
 
         public override void ChangeDirection(Vector2 direction)
@@ -87,11 +83,11 @@ namespace _PacmanGame.Scripts.Actors
             }
 
             base.ChangeDirection(direction);
-            
+
             var rotate = currentDirection == Vector2.left ? 180 :
                 currentDirection == Vector2.down ? 270 :
-                currentDirection == Vector2.up ? 90 : 0; 
-            transform.localRotation = Quaternion.Euler(0,0,rotate);
+                currentDirection == Vector2.up ? 90 : 0;
+            transform.localRotation = Quaternion.Euler(0, 0, rotate);
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -109,7 +105,6 @@ namespace _PacmanGame.Scripts.Actors
                 return;
             }
 
-            
             Destroy(other.gameObject);
             AddScore?.Invoke(1);
         }

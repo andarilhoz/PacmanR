@@ -1,6 +1,6 @@
 namespace _PacmanGame.Scripts.Actors.Ghosts
 {
-    public enum GhostState
+    public enum GhostStates
     {
         Locked = 0,
         Scatter = 1,

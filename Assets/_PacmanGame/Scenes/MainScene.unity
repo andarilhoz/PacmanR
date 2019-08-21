@@ -645,7 +645,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 9, y: -144.80002}
+  m_AnchoredPosition: {x: 9, y: -144.80005}
   m_SizeDelta: {x: 640, y: 242.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1072733007
@@ -851,7 +851,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MapGenerator: {fileID: 1317308842}
-  ghostComboText: {fileID: 22670049}
 --- !u!114 &1317308842
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -898,6 +897,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HighScoreText: {fileID: 80874546}
   CurrentScoreText: {fileID: 1581486013}
+  ghostComboText: {fileID: 22670049}
 --- !u!1 &1467040943
 GameObject:
   m_ObjectHideFlags: 0

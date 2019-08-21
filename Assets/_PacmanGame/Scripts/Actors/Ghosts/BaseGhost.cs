@@ -6,279 +6,183 @@ using Random = UnityEngine.Random;
 
 namespace _PacmanGame.Scripts.Actors.Ghosts
 {
+    [RequireComponent(typeof(BaseGhostState))]
     public abstract class BaseGhost : Actors
     {
-        public Vector2 scatterPoint = Vector2.zero;
-        private Vector3 GhostHousePoint = Vector3.zero;
-        
-        public static event Action<GhostState> TouchGhost;
-        
-        public GhostState CurrentState;
-        private GhostState PreviousState;
-        
+        public Vector2 scatterPoint { get; set; }
+
+        private readonly Vector3 GhostHousePoint = Vector3.zero;
+
+        protected BaseGhostState ghostState;
         protected static Pacman PacmanTarget;
 
         private bool choosedPath = false;
 
-        private float afraidSpeedMultiplier = .5f;
-
-        protected float modeTimer = Mathf.Infinity;
-        protected int stateIteraction = 0;
-
-
-        private float changedStateTimer = 0;
-        private float changedStateCoolDown = .5f; 
-         
-        protected (GhostState, float)[] StateTimers = new (GhostState, float)[]
-        {
-            (GhostState.Scatter, 7),
-            (GhostState.Chasing, 20),
-            (GhostState.Scatter, 7),
-            (GhostState.Chasing, 20),
-            (GhostState.Scatter, 5),
-            (GhostState.Chasing, 20),
-            (GhostState.Scatter, 5),
-            (GhostState.Chasing, 20),
-        };
-
-        private float AfraidTime = 6f;
+        public static event Action<GhostStates> TouchGhost;
 
         protected new virtual void Awake()
         {
             base.Awake();
-            
-            if ( PacmanTarget != null ) return;
+            ghostState = GetComponent<BaseGhostState>();
+            if ( PacmanTarget != null )
+            {
+                return;
+            }
+
             PacmanTarget = FindObjectOfType<Pacman>();
         }
 
-        protected new virtual void Start()
-        {
-            base.Start();
-            ChangeState(GhostState.Locked);
-            Pacman.EatPowerDot += () => ChangeState(GhostState.Afraid);
-        }
+        protected static float NodeDistanceFromPacman(Node node) =>
+            Vector2.Distance(node.Position, PacmanTarget.transform.position);
 
-        protected void NextState()
-        {
-            if ( stateIteraction >= StateTimers.Length )
-            {
-                ChangeState(GhostState.Chasing);
-                modeTimer = Mathf.Infinity;
-                return;
-            }
-
-            ChangeState(StateTimers[stateIteraction].Item1);
-            modeTimer = StateTimers[stateIteraction].Item2;
-            stateIteraction++;
-        }
-
-
-        protected void ChangeState(GhostState newState)
-        {
-            if ( newState == CurrentState )
-            {
-                if ( newState.Equals(GhostState.Afraid) )
-                {
-                    animator.SetBool("AfraidLowTime", false);
-                    modeTimer = AfraidTime;
-                }
-
-                return;
-            }
-
-            if ( CurrentState.Equals(GhostState.Afraid) )
-            {
-                animator.SetBool("IsAfraid", false);
-                animator.SetBool("AfraidLowTime", false);
-                currentSpeed = speed;
-            }
-
-            if ( CurrentState.Equals(GhostState.Dead) )
-            {
-                animator.SetBool("Dead", false);
-                currentSpeed = speed;
-            }
-
-            if ( newState.Equals(GhostState.Afraid) && (CurrentState.Equals(GhostState.Dead) || CurrentState.Equals(GhostState.Locked)) )
-            {
-                return;
-            }
-
-            ChangeDirection(GetNodeDirection(previousNode));
-            changedStateTimer = changedStateCoolDown;
-            switch (newState)
-            {
-                case GhostState.Locked:
-                    break;
-                case GhostState.Scatter:
-                    break;
-                case GhostState.Chasing:
-                    break;
-                case GhostState.Afraid:
-                    animator.SetBool("IsAfraid", true);
-                    currentSpeed = speed * afraidSpeedMultiplier;
-                    modeTimer = AfraidTime;
-                    break;
-                case GhostState.Dead:
-                    animator.SetBool("Dead", true);
-                    currentSpeed = speed * 4;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
-            }
-
-            PreviousState = CurrentState;
-            CurrentState = newState;
-        }
 
         protected new void FixedUpdate()
         {
             base.FixedUpdate();
-            
-            UpdateStateTimer();
-            if(CurrentState.Equals(GhostState.Locked)) LeaveHouse();
+
+            if ( ghostState.CurrentStates.Equals(GhostStates.Locked) )
+            {
+                LeaveHouse();
+            }
+
             if ( !currentNode.IsIntersection )
             {
                 choosedPath = false;
                 return;
             }
 
-            var unstableStates = CurrentState.Equals(GhostState.Chasing) || CurrentState.Equals(GhostState.Afraid);  
 
-            if ( !currentNode.IsIntersection || (choosedPath && unstableStates))
+            if ( !currentNode.IsIntersection || choosedPath && ghostState.IsInUnstableStates() )
             {
                 return;
             }
 
             choosedPath = true;
+
             Intersection();
         }
-        
+
         protected override void GetCurrentNode()
         {
-            if ( changedStateTimer > 0 )
+            if ( ghostState.changedStateTimer > 0 && previousNode.nodeIntersections != null )
             {
                 return;
             }
+
             base.GetCurrentNode();
         }
 
-        private void UpdateStateTimer()
-        {
-            if ( CurrentState.Equals(GhostState.Afraid) && modeTimer < AfraidTime * 0.3f )
-            {
-                animator.SetBool("AfraidLowTime", true);
-            }
-
-            if ( changedStateTimer > 0 )
-            {
-                changedStateTimer -= Time.deltaTime;
-            }
-
-            if ( modeTimer > 0 )
-            {
-                modeTimer -= Time.deltaTime;
-                return;
-            }
-            
-
-            NextState();
-        }
-        
-        protected Node ChooseNode( Func<Node, float> compareFunction, params Node[] nodes)
+        protected Node ChooseNode(Func<Node, float> compareFunction, params Node[] nodes)
         {
             var validNodes = new List<Node>();
-            
+
             foreach (var node in nodes)
             {
-                if ( node == null ) continue;
-                if( node == previousNode) continue;
+                if ( node == null )
+                {
+                    continue;
+                }
+
+                if ( node == previousNode )
+                {
+                    continue;
+                }
+
                 validNodes.Add(node);
             }
-            validNodes.Sort((v1,v2) => compareFunction(v1).CompareTo(compareFunction(v2)));
+
+            validNodes.Sort((v1, v2) => compareFunction(v1).CompareTo(compareFunction(v2)));
             return validNodes[0];
         }
-        
+
         protected Vector2 GetNodeDirection(Node node)
         {
             if ( node == currentNode.nodeIntersections.Left )
             {
                 return Vector2.left;
             }
-            
+
             if ( node == currentNode.nodeIntersections.Right )
             {
                 return Vector2.right;
             }
-            
+
             if ( node == currentNode.nodeIntersections.Up )
             {
                 return Vector2.up;
             }
 
             return Vector2.down;
-
         }
 
         protected virtual void Intersection()
         {
-            switch (CurrentState)
+            switch (ghostState.CurrentStates)
             {
-                case GhostState.Afraid:
+                case GhostStates.Afraid:
                     AfraidIntersection();
                     return;
-                case GhostState.Scatter:
+                case GhostStates.Scatter:
                     ScatterIntersection();
                     return;
-                case GhostState.Dead:
+                case GhostStates.Dead:
                     DeadIntersection();
                     return;
+                case GhostStates.Locked:
+                    break;
+                case GhostStates.Chasing:
+                    ChasingIntersection();
+                    break;
             }
+        }
+
+
+        //This class should be override by each individual ghosts
+        protected virtual void ChasingIntersection()
+        {
         }
 
         private void AfraidIntersection()
         {
             var intersections = currentNode.nodeIntersections;
-            var chosedNode = ChooseNode( PseudoRandomFloat, intersections.Left, intersections.Down, intersections.Right, intersections.Up);
+            var chosedNode = ChooseNode(PseudoRandomFloat, intersections.Left, intersections.Down, intersections.Right,
+                intersections.Up);
             var direction = GetNodeDirection(chosedNode);
             ChangeDirection(direction);
         }
 
-        private float PseudoRandomFloat(Node node)
-        {
-            return Random.value;
-        }
+        private float PseudoRandomFloat(Node node) => Random.value;
 
         private void ScatterIntersection()
         {
             var intersections = currentNode.nodeIntersections;
-            var chosedNode = ChooseNode( NodeDistanceFromScatterPoint, intersections.Left, intersections.Down, intersections.Right, intersections.Up);
-            var direction = GetNodeDirection(chosedNode);
-            ChangeDirection(direction);
-        }
-        
-        private void DeadIntersection()
-        {
-            if ( previousNode.ThinWall )
-            {
-                ChangeState(GhostState.Locked);
-            }
-            var intersections = currentNode.nodeIntersections;
-            var chosedNode = ChooseNode( NodeDistanceFromGhostHouse, intersections.Left, intersections.Down, intersections.Right, intersections.Up);
+            var chosedNode = ChooseNode(NodeDistanceFromScatterPoint, intersections.Left, intersections.Down,
+                intersections.Right, intersections.Up);
             var direction = GetNodeDirection(chosedNode);
             ChangeDirection(direction);
         }
 
-        private float NodeDistanceFromGhostHouse(Node node)
+        private void DeadIntersection()
         {
-            return Vector2.Distance(node.Position, GhostHousePoint);
+            if ( previousNode.ThinWall )
+            {
+                ghostState.ChangeState(GhostStates.Locked);
+            }
+
+            var intersections = currentNode.nodeIntersections;
+            var chosedNode = ChooseNode(NodeDistanceFromGhostHouse, intersections.Left, intersections.Down,
+                intersections.Right, intersections.Up);
+            var direction = GetNodeDirection(chosedNode);
+            ChangeDirection(direction);
         }
+
+        private float NodeDistanceFromGhostHouse(Node node) => Vector2.Distance(node.Position, GhostHousePoint);
 
         private void LeaveHouse()
         {
             if ( currentNode.ThinWall )
             {
-                NextState();
+                ghostState.NextState();
             }
 
             if ( IsDirectionAvailable(Vector2.up) )
@@ -292,14 +196,11 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
                 ChangeDirection(Vector2.left);
                 return;
             }
-            
+
             ChangeDirection(Vector2.right);
         }
 
-        protected float NodeDistanceFromScatterPoint(Node node)
-        {
-            return Vector2.Distance(node.Position, scatterPoint);
-        }
+        protected float NodeDistanceFromScatterPoint(Node node) => Vector2.Distance(node.Position, scatterPoint);
 
         private void OnTriggerEnter2D(Collider2D other)
         {
@@ -308,18 +209,36 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
                 return;
             }
 
-            if ( CurrentState.Equals(GhostState.Dead) )
+            if ( ghostState.CurrentStates.Equals(GhostStates.Dead) )
             {
                 return;
             }
 
-            TouchGhost?.Invoke(CurrentState);
-
-            if ( CurrentState.Equals(GhostState.Afraid) )
+            TouchGhost?.Invoke(ghostState.CurrentStates);
+            if ( ghostState.CurrentStates.Equals(GhostStates.Afraid) )
             {
-                ChangeState(GhostState.Dead);
-                modeTimer = Mathf.Infinity;
+                ghostState.ChangeState(GhostStates.Dead);
             }
+        }
+
+        public void ResetSpeed()
+        {
+            currentSpeed = baseSpeed;
+        }
+
+        public void MultiplySpeed(float multiplier)
+        {
+            currentSpeed = baseSpeed * multiplier;
+        }
+
+        public void ReverseDirection()
+        {
+            if ( previousNode.nodeIntersections == null )
+            {
+                return;
+            }
+
+            ChangeDirection(GetNodeDirection(previousNode));
         }
     }
 }
