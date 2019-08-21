@@ -32,9 +32,11 @@ namespace _PacmanGame.Scripts.Pathfind
                 for (var y = 0; y < map.GetLength(1); y++)
                 {
                     var Wall = !((ItemTypes) map[x, y]).IsValidPath();
+                    var ThinWall = ((ItemTypes) map[x, y]).Equals(ItemTypes.ThinWall);
                     var IsTeleport = ((ItemTypes) map[x, y]).Equals(ItemTypes.Teleport);
                     var node = new Node(Wall, realWorldPosGrid[x,y], x, y);
                     node.IsTeleport = IsTeleport;
+                    node.ThinWall = ThinWall;
                     
                     nodes.Add(node);
                     grid[x, y] = node;

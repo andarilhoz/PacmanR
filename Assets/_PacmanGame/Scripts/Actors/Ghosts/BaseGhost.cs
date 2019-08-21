@@ -9,6 +9,9 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
     public abstract class BaseGhost : Actors
     {
         public Vector2 scatterPoint = Vector2.zero;
+        private Vector3 GhostHousePoint = Vector3.zero;
+        
+        public static event Action<GhostState> TouchGhost;
         
         public GhostState CurrentState;
         private GhostState PreviousState;
@@ -19,12 +22,12 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
 
         private float afraidSpeedMultiplier = .5f;
 
-        protected float modeTimer = 0;
+        protected float modeTimer = Mathf.Infinity;
         protected int stateIteraction = 0;
          
         protected (GhostState, float)[] StateTimers = new (GhostState, float)[]
         {
-            (GhostState.Scatter, 7),
+            (GhostState.Scatter, 8),
             (GhostState.Chasing, 20),
             (GhostState.Scatter, 7),
             (GhostState.Chasing, 20),
@@ -47,6 +50,7 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
         protected new virtual void Start()
         {
             base.Start();
+            ChangeState(GhostState.Locked);
             Pacman.EatPowerDot += () => ChangeState(GhostState.Afraid);
         }
 
@@ -75,6 +79,13 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
             if ( CurrentState.Equals(GhostState.Afraid) )
             {
                 animator.SetBool("IsAfraid", false);
+                animator.SetBool("AfraidLowTime", false);
+                currentSpeed = speed;
+            }
+
+            if ( CurrentState.Equals(GhostState.Dead) )
+            {
+                animator.SetBool("Dead", false);
                 currentSpeed = speed;
             }
 
@@ -99,6 +110,8 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
                     modeTimer = AfraidTime;
                     break;
                 case GhostState.Dead:
+                    animator.SetBool("Dead", true);
+                    currentSpeed = speed * 4;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
@@ -113,13 +126,16 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
             base.FixedUpdate();
             
             UpdateStateTimer();
+            if(CurrentState.Equals(GhostState.Locked)) LeaveHouse();
             if ( !currentNode.IsIntersection )
             {
                 choosedPath = false;
                 return;
             }
 
-            if ( !currentNode.IsIntersection || choosedPath )
+            var unstableStates = CurrentState.Equals(GhostState.Chasing) || CurrentState.Equals(GhostState.Afraid);  
+
+            if ( !currentNode.IsIntersection || (choosedPath && unstableStates))
             {
                 return;
             }
@@ -130,13 +146,19 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
 
         private void UpdateStateTimer()
         {
-            if ( modeTimer <= 0 )
+            if ( CurrentState.Equals(GhostState.Afraid) && modeTimer < AfraidTime * 0.3f )
             {
-                NextState();
+                animator.SetBool("AfraidLowTime", true);
+            }
+            
+            if ( modeTimer > 0 )
+            {
+                modeTimer -= Time.deltaTime;
                 return;
             }
+            
 
-            modeTimer -= Time.deltaTime;
+            NextState();
         }
         
         protected Node ChooseNode( Func<Node, float> compareFunction, params Node[] nodes)
@@ -176,16 +198,17 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
 
         protected virtual void Intersection()
         {
-            if ( CurrentState.Equals(GhostState.Afraid) )
+            switch (CurrentState)
             {
-                AfraidIntersection();
-                return;
-            }
-
-            if ( CurrentState.Equals(GhostState.Scatter) )
-            {
-                ScatterIntersection();
-                return;
+                case GhostState.Afraid:
+                    AfraidIntersection();
+                    return;
+                case GhostState.Scatter:
+                    ScatterIntersection();
+                    return;
+                case GhostState.Dead:
+                    DeadIntersection();
+                    return;
             }
         }
 
@@ -209,11 +232,70 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
             var direction = GetNodeDirection(chosedNode);
             ChangeDirection(direction);
         }
+        
+        private void DeadIntersection()
+        {
+            if ( previousNode.ThinWall )
+            {
+                ChangeState(GhostState.Locked);
+            }
+            var intersections = currentNode.nodeIntersections;
+            var chosedNode = ChooseNode( NodeDistanceFromGhostHouse, intersections.Left, intersections.Down, intersections.Right, intersections.Up);
+            var direction = GetNodeDirection(chosedNode);
+            ChangeDirection(direction);
+        }
+
+        private float NodeDistanceFromGhostHouse(Node node)
+        {
+            return Vector2.Distance(node.Position, GhostHousePoint);
+        }
+
+        private void LeaveHouse()
+        {
+            if ( currentNode.ThinWall )
+            {
+                NextState();
+            }
+
+            if ( IsDirectionAvailable(Vector2.up) )
+            {
+                ChangeDirection(Vector2.up);
+                return;
+            }
+
+            if ( IsDirectionAvailable(Vector2.left) )
+            {
+                ChangeDirection(Vector2.left);
+                return;
+            }
+            
+            ChangeDirection(Vector2.right);
+        }
 
         private float NodeDistanceFromScatterPoint(Node node)
         {
             return Vector2.Distance(node.Position, scatterPoint);
         }
 
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if ( !other.transform.CompareTag("Player") )
+            {
+                return;
+            }
+
+            if ( CurrentState.Equals(GhostState.Dead) )
+            {
+                return;
+            }
+
+            TouchGhost?.Invoke(CurrentState);
+
+            if ( CurrentState.Equals(GhostState.Afraid) )
+            {
+                ChangeState(GhostState.Dead);
+                modeTimer = Mathf.Infinity;
+            }
+        }
     }
 }

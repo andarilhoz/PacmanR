@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 60924029654372655}
   - component: {fileID: 8504538178850629215}
   m_Layer: 8
-  m_Name: wall
+  m_Name: thinWall
   m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -68,8 +68,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300004, guid: d18e35f409c33224d83a191a911ce0ea, type: 3}
-  m_Color: {r: 0, g: 0.26829123, b: 1, a: 1}
+  m_Sprite: {fileID: 21300006, guid: d18e35f409c33224d83a191a911ce0ea, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

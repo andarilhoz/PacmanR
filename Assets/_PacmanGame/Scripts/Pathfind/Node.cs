@@ -38,12 +38,11 @@ namespace _PacmanGame.Scripts.Pathfind
 
         public Node Parent;
 
-        public bool dirt = false;
-
         public int gCost;
         public int hCost;
         public int FCost => gCost + hCost;
         public Intersections nodeIntersections;
+        public bool ThinWall = false;
 
     
         public Node(bool isWall, Vector2 aPos, int aGridX, int aGridY)

@@ -55,28 +55,27 @@ namespace _PacmanGame.Scripts.Actors
         
         protected bool IsDirectionAvailable(Vector2 direction)
         {
-            
+            return GetNodeInDirection(direction) != null;
+        }
+
+        protected Node GetNodeInDirection(Vector2 direction)
+        {
             if ( direction == Vector2.left )
             {
-                return currentNode.nodeIntersections.Left != null;
+                return currentNode.nodeIntersections.Left;
             }
             
             if ( direction == Vector2.right )
             {
-                return currentNode.nodeIntersections.Right != null;
+                return currentNode.nodeIntersections.Right;
             }
             
             if ( direction == Vector2.up )
             {
-                return currentNode.nodeIntersections.Up != null;
-            }
-            
-            if ( direction == Vector2.down )
-            {
-                return currentNode.nodeIntersections.Down != null;
+                return currentNode.nodeIntersections.Up;
             }
 
-            return false;
+            return currentNode.nodeIntersections.Down;
         }
 
         protected void FixedUpdate()
@@ -101,25 +100,7 @@ namespace _PacmanGame.Scripts.Actors
 
         private void SetNextNode()
         {
-            if ( currentDirection == Vector2.left )
-            {
-                nextNode = currentNode.nodeIntersections.Left;
-            }
-            
-            if ( currentDirection == Vector2.right )
-            {
-                nextNode = currentNode.nodeIntersections.Right;
-            }
-            
-            if ( currentDirection == Vector2.up )
-            {
-                nextNode = currentNode.nodeIntersections.Up;
-            }
-            
-            if ( currentDirection == Vector2.down )
-            {
-                nextNode = currentNode.nodeIntersections.Down;
-            }
+            nextNode = GetNodeInDirection(currentDirection);
         }
 
         private void TryAgainChangeDirection()

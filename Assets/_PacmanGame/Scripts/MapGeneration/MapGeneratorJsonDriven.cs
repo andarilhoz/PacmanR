@@ -18,6 +18,8 @@ namespace _PacmanGame.Scripts
         public GameObject ThinWallPrefab;
         public GameObject PlayerPrefab;
         public GameObject BlinkyPrefab;
+        public GameObject PinkyPrefab;
+        public GameObject InkyPrefab;
         public GameObject TeleportPrefab;
 
         private const float TILE_OFFSET = 0.255f;
@@ -60,8 +62,10 @@ namespace _PacmanGame.Scripts
                 {ItemTypes.PowerDot, PowerDotPrefab},
                 {ItemTypes.PlayerPos, PlayerPrefab},
                 {ItemTypes.Teleport, TeleportPrefab},
-                {ItemTypes.ThinWall, WallPrefab},
-                {ItemTypes.Blinky, BlinkyPrefab}
+                {ItemTypes.ThinWall, ThinWallPrefab},
+                {ItemTypes.Blinky, BlinkyPrefab},
+                {ItemTypes.Pinky, PinkyPrefab},
+                {ItemTypes.Inky, InkyPrefab}
             };  
 
             
@@ -89,7 +93,8 @@ namespace _PacmanGame.Scripts
             {
                 for (var j = 0; j < rightJson.GetLength(1); j++)
                 {
-                    duplicatedMap[i, j + originalMap.GetLength(1)] = rightJson[i, j];
+                    var value = ((ItemTypes) rightJson[i, j]).IsGhost() ? 0 : rightJson[i, j];
+                    duplicatedMap[i, j + originalMap.GetLength(1)] = value;
                 }    
             }
 
