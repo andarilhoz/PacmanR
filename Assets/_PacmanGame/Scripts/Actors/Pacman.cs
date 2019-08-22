@@ -4,6 +4,7 @@ using UnityEngine;
 using _PacmanGame.Scripts.Actors.Ghosts;
 using _PacmanGame.Scripts.Canvas;
 using _PacmanGame.Scripts.InputSystem;
+using _PacmanGame.Scripts.Utils;
 
 namespace _PacmanGame.Scripts.Actors
 {
@@ -24,6 +25,8 @@ namespace _PacmanGame.Scripts.Actors
         private Vector2 lastDirectionBuffer;
         private const float CHANGE_DIRECTION_TIMEOUT = 0.3f;
         private float lastDirectionTimeout = 0;
+
+        private const float DIE_TIMER = .5f;
 
         protected override void Awake()
         {
@@ -92,9 +95,17 @@ namespace _PacmanGame.Scripts.Actors
             }
 
             LevelManager.Instance.PauseGame();
-            await Task.Delay(TimeSpan.FromSeconds(.5f));
+#if UNITY_WEBGL
+            StartCoroutine(CoroutineUtils.WaitSecondsCoroutine(DIE_TIMER, () =>
+            {
+                Die?.Invoke();
+                Animator.SetBool("IsAlive", false);
+            }));
+#else
+            await Task.Delay(TimeSpan.FromSeconds(DIE_TIMER));
             Die?.Invoke();
             Animator.SetBool("IsAlive", false);
+#endif
         }
 
         private void EatGhostCombo()

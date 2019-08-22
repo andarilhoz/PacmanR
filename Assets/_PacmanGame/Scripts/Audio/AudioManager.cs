@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using _PacmanGame.Scripts.Actors;
 using _PacmanGame.Scripts.Canvas;
+using _PacmanGame.Scripts.Utils;
 
 namespace _PacmanGame.Scripts.Audio
 {
@@ -27,6 +28,7 @@ namespace _PacmanGame.Scripts.Audio
 
         private const float MUNCH_TOLERANCE = .3f;
         private const float SIREN_LOWER_MULTIPLIER = .6f;
+        private const float FRENETIC_SIREN_TIMER = 5f;
         private float munchCooldown;
 
         private const string VOLUME_PLAYERPREFS_KEY = "VOLUME";
@@ -73,9 +75,8 @@ namespace _PacmanGame.Scripts.Audio
             OthersSource.mute = mute;
             MunchSource.mute = mute;
             Siren.mute = mute;
-            
         }
-        
+
         private void PlayMunch()
         {
             munchCooldown = MUNCH_TOLERANCE;
@@ -113,8 +114,13 @@ namespace _PacmanGame.Scripts.Audio
         private async void FreneticSiren()
         {
             Siren.pitch = 1.5f;
-            await Task.Delay(TimeSpan.FromSeconds(5f));
+#if UNITY_WEBGL
+            StartCoroutine(CoroutineUtils.WaitSecondsCoroutine(FRENETIC_SIREN_TIMER, NormalSiren));
+#else
+
+            await Task.Delay(TimeSpan.FromSeconds(FRENETIC_SIREN_TIMER));
             NormalSiren();
+#endif
         }
 
         private void NormalSiren()

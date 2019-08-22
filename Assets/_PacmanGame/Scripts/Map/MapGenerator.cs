@@ -29,7 +29,7 @@ namespace _PacmanGame.Scripts.Map
             var map = DuplicateMap(jsonData);
             return (map, GetRealWorldPosMap(map));
         }
-        
+
         //used to instantiate nodes later on, and also find wich node are corresponding to real world pos.
         private static Vector2[,] GetRealWorldPosMap(int[,] map)
         {
@@ -217,15 +217,17 @@ namespace _PacmanGame.Scripts.Map
             var oneLineString = mapAsset.text.Replace("\r\n", "");
             var removeSpaces = oneLineString.Replace(" ", "");
 
-            var matches = rowsRegex.Matches(removeSpaces);
-            var rowsSize = matches.Count;
-            var columnSize = columnRegex.Matches(matches[0].ToString()).Count;
+            var rowMatches = rowsRegex.Matches(removeSpaces);
+            var rowsSize = rowMatches.Count;
+
+            var columnMatches = columnRegex.Matches(rowMatches[0].ToString());
+            var columnSize = columnMatches.Count;
 
             var returnArray = new int[rowsSize, columnSize];
 
-            for (var i = 0; i < matches.Count; i++)
+            for (var i = 0; i < rowMatches.Count; i++)
             {
-                var rowData = columnRegex.Matches(matches[i].Value);
+                var rowData = columnRegex.Matches(rowMatches[i].Value);
                 for (var j = 0; j < rowData.Count; j++)
                 {
                     returnArray[i, j] = int.Parse(rowData[j].Value);

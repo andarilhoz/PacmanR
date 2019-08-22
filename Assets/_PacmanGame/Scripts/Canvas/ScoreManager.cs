@@ -84,13 +84,11 @@ namespace _PacmanGame.Scripts.Canvas
                 UpdateHighScore(CurrentScore);
             }
 
-            if ( CurrentScore - lastExtraLife < EXTRA_LIFE_POINTS )
+            if ( CurrentScore - lastExtraLife >= EXTRA_LIFE_POINTS )
             {
-                return;
+                lastExtraLife = CurrentScore;
+                ExtraLife?.Invoke();
             }
-
-            lastExtraLife = CurrentScore;
-            ExtraLife?.Invoke();
         }
 
         public void UpdateHighScore(int number)

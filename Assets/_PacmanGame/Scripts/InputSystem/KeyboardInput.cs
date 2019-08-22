@@ -51,7 +51,24 @@ namespace _PacmanGame.Scripts.InputSystem
                 return;
             }
 
-            var direction = rightMove ? Vector2.right : leftMove ? Vector2.left : downMove ? Vector2.down : Vector2.up;
+            Vector2 direction;
+
+            if ( rightMove )
+            {
+                direction = Vector2.right;
+            }
+            else if ( leftMove )
+            {
+                direction = Vector2.left;
+            }
+            else if ( downMove )
+            {
+                direction = Vector2.down;
+            }
+            else
+            {
+                direction = Vector2.up;
+            }
 
             OnInput?.Invoke(direction);
         }

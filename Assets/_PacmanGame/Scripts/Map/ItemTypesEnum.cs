@@ -34,11 +34,8 @@ namespace _PacmanGame.Scripts.Map
             switch (type)
             {
                 case ItemTypes.Blinky:
-                    return true;
                 case ItemTypes.Pinky:
-                    return true;
                 case ItemTypes.Inky:
-                    return true;
                 case ItemTypes.Clyde:
                     return true;
                 default:
