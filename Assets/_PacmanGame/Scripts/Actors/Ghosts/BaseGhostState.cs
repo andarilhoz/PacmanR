@@ -48,7 +48,7 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
 
         private void Update()
         {
-            if ( LevelManager.Instance.CurrentGameState.Equals(LevelManager.GameState.Pause) )
+            if ( LevelManager.Instance.GetCurrentState().Equals(LevelManager.GameState.Pause) )
             {
                 return;
             }

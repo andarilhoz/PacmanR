@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using _PacmanGame.Scripts.Actors;
 
-namespace _PacmanGame.Scripts.Canvas.Score
+namespace _PacmanGame.Scripts.Canvas
 {
     public class ScoreManager : MonoBehaviour
     {

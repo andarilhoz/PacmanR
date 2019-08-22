@@ -4,8 +4,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using _PacmanGame.Scripts.Actors;
-using _PacmanGame.Scripts.Canvas.Fadeout;
-using _PacmanGame.Scripts.Canvas.Score;
+using _PacmanGame.Scripts.Canvas;
 using _PacmanGame.Scripts.Map;
 using Grid = _PacmanGame.Scripts.Map.Grid;
 
@@ -18,7 +17,7 @@ namespace _PacmanGame.Scripts
         public Grid LevelGrid { get; set; }
         public int[,] RowMap { get; set; }
         public Vector2[,] RealWorldPosMap { get; set; }
-        public GameState CurrentGameState = GameState.Pause;
+        private GameState currentGameState = GameState.Pause;
 
         private int eatenDots = 0;
         private int maxDots;
@@ -67,7 +66,7 @@ namespace _PacmanGame.Scripts
         private void Start()
         {
             Initialize();
-            InstructionsFadeout.StartGame += () => CurrentGameState = GameState.Playing;
+            InstructionsFadeout.StartGame += () => currentGameState = GameState.Playing;
             Pacman.EatDot += PacmanDotEat;
 
             wallMaterialOriginalColor = WallMaterial.color;
@@ -77,12 +76,17 @@ namespace _PacmanGame.Scripts
 
         public void PauseGame()
         {
-            CurrentGameState = GameState.Pause;
+            currentGameState = GameState.Pause;
         }
         
         public void ResumeGame()
         {
-            CurrentGameState = GameState.Playing;
+            currentGameState = GameState.Playing;
+        }
+
+        public GameState GetCurrentState()
+        {
+            return currentGameState;
         }
 
         public void ResetActors()
@@ -124,7 +128,7 @@ namespace _PacmanGame.Scripts
                 return;
             }
 
-            CurrentGameState = GameState.Pause;
+            currentGameState = GameState.Pause;
             wonGame = true;
         }
 

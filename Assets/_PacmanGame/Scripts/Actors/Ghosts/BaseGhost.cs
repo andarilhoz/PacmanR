@@ -40,7 +40,7 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
         {
             base.FixedUpdate();
 
-            if ( LevelManager.Instance.CurrentGameState.Equals(LevelManager.GameState.Pause) )
+            if ( LevelManager.Instance.GetCurrentState().Equals(LevelManager.GameState.Pause) )
             {
                 return;
             }
@@ -156,7 +156,6 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
                     break;
             }
         }
-
 
         //This class should be override by each individual ghosts
         protected virtual void ChasingIntersection()

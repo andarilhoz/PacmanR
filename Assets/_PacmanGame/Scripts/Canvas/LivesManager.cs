@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using _PacmanGame.Scripts.Actors;
-using _PacmanGame.Scripts.Canvas.Score;
 
-namespace _PacmanGame.Scripts
+namespace _PacmanGame.Scripts.Canvas
 {
     public class LivesManager : MonoBehaviour
     {

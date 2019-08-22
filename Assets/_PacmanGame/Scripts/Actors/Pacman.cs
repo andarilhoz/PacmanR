@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine;
 using _PacmanGame.Scripts.Actors.Ghosts;
-using _PacmanGame.Scripts.Canvas.Score;
+using _PacmanGame.Scripts.Canvas;
 using _PacmanGame.Scripts.InputSystem;
 
 namespace _PacmanGame.Scripts.Actors
@@ -91,7 +91,7 @@ namespace _PacmanGame.Scripts.Actors
                 return;
             }
 
-            LevelManager.Instance.CurrentGameState = LevelManager.GameState.Pause;
+            LevelManager.Instance.PauseGame();
             await Task.Delay(TimeSpan.FromSeconds(.5f));
             Die?.Invoke();
             Animator.SetBool("IsAlive", false);

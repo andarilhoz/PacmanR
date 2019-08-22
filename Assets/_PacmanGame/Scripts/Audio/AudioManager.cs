@@ -2,8 +2,7 @@
 using System.Threading.Tasks;
 using UnityEngine;
 using _PacmanGame.Scripts.Actors;
-using _PacmanGame.Scripts.Canvas.Fadeout;
-using _PacmanGame.Scripts.Canvas.Score;
+using _PacmanGame.Scripts.Canvas;
 
 namespace _PacmanGame.Scripts.Audio
 {

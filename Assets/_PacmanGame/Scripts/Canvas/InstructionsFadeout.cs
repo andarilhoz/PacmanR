@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using _PacmanGame.Scripts.InputSystem;
 
-namespace _PacmanGame.Scripts.Canvas.Fadeout
+namespace _PacmanGame.Scripts.Canvas
 {
     public class InstructionsFadeout : MonoBehaviour
     {
