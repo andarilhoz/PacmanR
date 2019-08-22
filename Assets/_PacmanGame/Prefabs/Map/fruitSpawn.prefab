@@ -43,5 +43,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daf534c0a747ee44cbb899d939f59b20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fruitPrefab: {fileID: 220558128635861527, guid: 6cac1a2cf23db8845908f781cdf7b057,
+  FruitPrefab: {fileID: 220558128635861527, guid: 6cac1a2cf23db8845908f781cdf7b057,
     type: 3}

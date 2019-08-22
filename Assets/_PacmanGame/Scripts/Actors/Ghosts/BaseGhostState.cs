@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace _PacmanGame.Scripts.Actors.Ghosts
@@ -7,8 +6,10 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
     public class BaseGhostState : MonoBehaviour
     {
         public GhostStates CurrentStates;
+        public float lockedTime;
+        
         private GhostStates previousStates;
-        private float modeTimer = Mathf.Infinity;
+        private float modeTimer;
         private int stateIteraction = 0;
 
         public float changedStateTimer { get; set; }
@@ -46,11 +47,21 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
             UpdateStateTimer();
         }
 
+        public void InitializeLockedTimer()
+        {
+            modeTimer = lockedTime;
+        }
+
         public bool IsInUnstableStates() =>
             CurrentStates.Equals(GhostStates.Chasing) || CurrentStates.Equals(GhostStates.Afraid);
 
         public void NextState()
         {
+            if ( CurrentStates.Equals(GhostStates.InHouse) )
+            {
+                ChangeState(GhostStates.LeavingHouse);
+                return;
+            }
             if ( stateIteraction >= StateTimers.Length )
             {
                 ChangeState(GhostStates.Chasing);
@@ -78,7 +89,7 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
             }
 
             if ( newStates.Equals(GhostStates.Afraid) &&
-                 (CurrentStates.Equals(GhostStates.Dead) || CurrentStates.Equals(GhostStates.Locked)) )
+                 (CurrentStates.Equals(GhostStates.Dead) || CurrentStates.Equals(GhostStates.LeavingHouse)) )
             {
                 return;
             }
@@ -101,13 +112,15 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
             changedStateTimer = CHANGE_STATE_COOLDOWN;
             switch (newStates)
             {
-                case GhostStates.Locked:
+                case GhostStates.LeavingHouse:
+                    modeTimer = Mathf.Infinity;
                     break;
                 case GhostStates.Scatter:
                     break;
                 case GhostStates.Chasing:
                     break;
                 case GhostStates.Afraid:
+                    if ( InsideHouseStates() ) return;
                     baseGhost.animator.SetBool("IsAfraid", true);
                     baseGhost.MultiplySpeed(AFRAID_SPEED_MULTIPLIER);
                     modeTimer = AFRAID_TIME;
@@ -121,6 +134,11 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
 
             previousStates = CurrentStates;
             CurrentStates = newStates;
+        }
+        
+        private bool InsideHouseStates()
+        {
+            return CurrentStates.Equals( GhostStates.InHouse) || CurrentStates.Equals(GhostStates.LeavingHouse );
         }
 
         private void UpdateStateTimer()

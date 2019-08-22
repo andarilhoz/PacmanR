@@ -1,14 +1,13 @@
 using UnityEngine;
 using _PacmanGame.Scripts.Actors;
-using _PacmanGame.Scripts.Score;
 
 namespace _PacmanGame.Scripts.Fruit
 {
     public class FruitSpawn : MonoBehaviour
     {
-        public GameObject fruitPrefab;
+        public GameObject FruitPrefab;
 
-        private int[] pointsTrigger = {1, 150};
+        private readonly int[] pointsTrigger = {70, 150};
         private int fruitsDisplaced = 0;
 
         private int dotCounter = 0;
@@ -35,7 +34,7 @@ namespace _PacmanGame.Scripts.Fruit
         private void DisplaceFruit()
         {
             fruitsDisplaced++;
-            Instantiate(fruitPrefab, transform.position, Quaternion.identity);
+            Instantiate(FruitPrefab, transform.position, Quaternion.identity);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using _PacmanGame.Scripts.Pathfind;
+using _PacmanGame.Scripts.Map;
 
 namespace _PacmanGame.Scripts.Actors
 {
@@ -61,20 +61,20 @@ namespace _PacmanGame.Scripts.Actors
         {
             if ( direction == Vector2.left )
             {
-                return currentNode.nodeIntersections.Left;
+                return currentNode.NodeIntersections.Left;
             }
 
             if ( direction == Vector2.right )
             {
-                return currentNode.nodeIntersections.Right;
+                return currentNode.NodeIntersections.Right;
             }
 
             if ( direction == Vector2.up )
             {
-                return currentNode.nodeIntersections.Up;
+                return currentNode.NodeIntersections.Up;
             }
 
-            return currentNode.nodeIntersections.Down;
+            return currentNode.NodeIntersections.Down;
         }
 
 

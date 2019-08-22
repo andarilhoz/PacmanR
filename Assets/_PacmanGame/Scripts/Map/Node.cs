@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace _PacmanGame.Scripts.Pathfind
+namespace _PacmanGame.Scripts.Map
 {
     [System.Serializable]
     public class Node
@@ -16,7 +16,7 @@ namespace _PacmanGame.Scripts.Pathfind
 
         public Vector2 Position;
 
-        public Intersections nodeIntersections;
+        public Intersections NodeIntersections;
         public bool ThinWall = false;
 
 
@@ -44,8 +44,8 @@ namespace _PacmanGame.Scripts.Pathfind
         {
             get
             {
-                var horizontal = nodeIntersections.Left != null || nodeIntersections.Right != null;
-                var vertical = nodeIntersections.Up != null || nodeIntersections.Down != null;
+                var horizontal = NodeIntersections.Left != null || NodeIntersections.Right != null;
+                var vertical = NodeIntersections.Up != null || NodeIntersections.Down != null;
                 return horizontal && vertical;
             }
         }

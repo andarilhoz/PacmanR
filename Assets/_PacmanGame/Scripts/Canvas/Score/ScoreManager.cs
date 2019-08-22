@@ -2,17 +2,17 @@
 using UnityEngine;
 using _PacmanGame.Scripts.Actors;
 
-namespace _PacmanGame.Scripts.Score
+namespace _PacmanGame.Scripts.Canvas.Score
 {
     public class ScoreManager : MonoBehaviour
     {
         public TextMeshProUGUI HighScoreText;
         public TextMeshProUGUI CurrentScoreText;
 
-        public TextMeshProUGUI comboText;
+        public TextMeshProUGUI ComboText;
 
-        public Color ghostPointColor;
-        public Color fruitPointColor;
+        public Color GhostPointColor;
+        public Color FruitPointColor;
 
         private int highScore;
         public int CurrentScore;
@@ -85,7 +85,7 @@ namespace _PacmanGame.Scripts.Score
         {
             if ( comboTextTimer <= 0 && textOn )
             {
-                comboText.transform.position = new Vector2(100, 100);
+                ComboText.transform.position = new Vector2(100, 100);
                 return;
             }
 
@@ -95,9 +95,9 @@ namespace _PacmanGame.Scripts.Score
         public void SetComboText(string text, Vector2 postion, bool isGhost)
         {
             comboTextTimer = comboTextShowingTime;
-            comboText.text = text;
-            comboText.color = isGhost ? ghostPointColor : fruitPointColor;
-            comboText.transform.position = postion;
+            ComboText.text = text;
+            ComboText.color = isGhost ? GhostPointColor : FruitPointColor;
+            ComboText.transform.position = postion;
             textOn = true;
         }
     }

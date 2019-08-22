@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
 using _PacmanGame.Scripts.Actors.Ghosts;
+using _PacmanGame.Scripts.Canvas.Score;
 using _PacmanGame.Scripts.InputSystem;
-using _PacmanGame.Scripts.Score;
 
 namespace _PacmanGame.Scripts.Actors
 {
@@ -133,6 +133,7 @@ namespace _PacmanGame.Scripts.Actors
             if ( other.transform.CompareTag("PowerDot") )
             {
                 EatPowerDot?.Invoke();
+                EatDot?.Invoke();    
                 Destroy(other.gameObject);
                 AddScore?.Invoke(50);
                 return;

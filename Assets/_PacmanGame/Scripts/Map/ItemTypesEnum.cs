@@ -1,4 +1,4 @@
-namespace _PacmanGame.Scripts
+namespace _PacmanGame.Scripts.Map
 {
     public enum ItemTypes
     {

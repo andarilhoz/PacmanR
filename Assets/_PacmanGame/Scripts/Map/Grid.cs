@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace _PacmanGame.Scripts.Pathfind
+namespace _PacmanGame.Scripts.Map
 {
     public class Grid
     {
-        public readonly List<Node> nodes = new List<Node>();
+        private readonly List<Node> nodes = new List<Node>();
 
         public Grid(int[,] map, Vector2[,] realWorldPosGrid)
         {
@@ -15,13 +15,13 @@ namespace _PacmanGame.Scripts.Pathfind
             {
                 for (var y = 0; y < map.GetLength(1); y++)
                 {
-                    var Wall = !((ItemTypes) map[x, y]).IsValidPath();
-                    var ThinWall = ((ItemTypes) map[x, y]).Equals(ItemTypes.ThinWall);
-                    var IsTeleport = ((ItemTypes) map[x, y]).Equals(ItemTypes.Teleport);
+                    var wall = !((ItemTypes) map[x, y]).IsValidPath();
+                    var thinWall = ((ItemTypes) map[x, y]).Equals(ItemTypes.ThinWall);
+                    var isTeleport = ((ItemTypes) map[x, y]).Equals(ItemTypes.Teleport);
 
-                    var node = new Node(Wall, realWorldPosGrid[x, y], x, y)
+                    var node = new Node(wall, realWorldPosGrid[x, y], x, y)
                     {
-                        IsTeleport = IsTeleport, ThinWall = ThinWall
+                        IsTeleport = isTeleport, ThinWall = thinWall
                     };
 
                     nodes.Add(node);
@@ -43,7 +43,7 @@ namespace _PacmanGame.Scripts.Pathfind
                         Left = GetIntersection(grid, x, y, Vector2.left),
                         Right = GetIntersection(grid, x, y, Vector2.right)
                     };
-                    grid[x, y].nodeIntersections = nodeIntersections;
+                    grid[x, y].NodeIntersections = nodeIntersections;
                 }
             }
         }

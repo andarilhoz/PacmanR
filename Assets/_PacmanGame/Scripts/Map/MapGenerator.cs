@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-namespace _PacmanGame.Scripts
+namespace _PacmanGame.Scripts.Map
 {
     [System.Serializable]
     public class MapGenerator : MonoBehaviour
@@ -20,8 +20,7 @@ namespace _PacmanGame.Scripts
         public GameObject FruitSpawnPrefab;
 
         public const float TILE_OFFSET = 0.255f;
-        public const float SCREEN_OFFSET = .125f;
-
+        private const float SCREEN_OFFSET = .125f;
 
         public (int[,], Vector2[,]) GenerateMap()
         {
@@ -45,7 +44,7 @@ namespace _PacmanGame.Scripts
             return realWorldPos;
         }
 
-        public void InstantiateMap(int[,] map, Vector2[,] realWorldPos)
+        public int InstantiateMap(int[,] map, Vector2[,] realWorldPos)
         {
             var itemDictionary = new Dictionary<ItemTypes, GameObject>
             {
@@ -64,7 +63,7 @@ namespace _PacmanGame.Scripts
             };
 
 
-            InstantiateArray(map, realWorldPos, itemDictionary);
+            return InstantiateArray(map, realWorldPos, itemDictionary);
         }
 
         private static int[,] DuplicateMap(int[,] originalMap)
@@ -105,9 +104,10 @@ namespace _PacmanGame.Scripts
             return new Vector2(column * TILE_OFFSET - xOffset + SCREEN_OFFSET, row * TILE_OFFSET - yOffset);
         }
 
-        private void InstantiateArray(int[,] data, Vector2[,] realWorldPos,
+        private int InstantiateArray(int[,] data, Vector2[,] realWorldPos,
             IReadOnlyDictionary<ItemTypes, GameObject> dictionary)
         {
+            var pointsCount = 0;
             for (var row = 0; row < data.GetLength(0); row++)
             {
                 for (var column = 0; column < data.GetLength(1); column++)
@@ -124,10 +124,17 @@ namespace _PacmanGame.Scripts
                         continue;
                     }
 
+                    if ( ((ItemTypes) currentTile).Equals(ItemTypes.PowerDot) ||
+                         ((ItemTypes) currentTile).Equals(ItemTypes.Point) )
+                    {
+                        pointsCount++;
+                    }
+
                     var item = Instantiate(dictionary[(ItemTypes) currentTile], transform, false);
                     item.transform.localPosition = realWorldPos[row, column];
                 }
             }
+            return pointsCount;
         }
 
         private static int[,] RemoveLastColumn(int[,] inputMatrix)

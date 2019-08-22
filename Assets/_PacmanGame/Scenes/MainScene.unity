@@ -198,8 +198,8 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 42
+  m_fontSizeBase: 42
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1184,6 +1184,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MapGenerator: {fileID: 1317308842}
   CurrentGameState: 1
+  wallMaterial: {fileID: 2100000, guid: 4335a39ab59dd374dafb94709728cb4c, type: 2}
 --- !u!114 &1317308842
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1232,9 +1233,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HighScoreText: {fileID: 80874546}
   CurrentScoreText: {fileID: 1581486013}
-  comboText: {fileID: 22670049}
-  ghostPointColor: {r: 0, g: 0.7935257, b: 1, a: 1}
-  fruitPointColor: {r: 1, g: 0.31764707, b: 0.0627451, a: 1}
+  ComboText: {fileID: 22670049}
+  GhostPointColor: {r: 1, g: 0.55423945, b: 0, a: 1}
+  FruitPointColor: {r: 0, g: 0.896049, b: 1, a: 1}
   CurrentScore: 0
 --- !u!1 &1467040943
 GameObject:

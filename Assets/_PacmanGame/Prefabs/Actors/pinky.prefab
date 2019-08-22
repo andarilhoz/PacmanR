@@ -152,10 +152,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e592c74f51a46ae8b4665a86f16f125, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  previousNode:
+    IsTeleport: 0
+    isLeft: 0
+    Position: {x: 0, y: 0}
+    ThinWall: 0
+  currentNode:
+    IsTeleport: 0
+    isLeft: 0
+    Position: {x: 0, y: 0}
+    ThinWall: 0
+  nextNode:
+    IsTeleport: 0
+    isLeft: 0
+    Position: {x: 0, y: 0}
+    ThinWall: 0
   baseSpeed: 0.9
   currentDirection: {x: 0, y: 1}
   animator: {fileID: 4270252720799458572}
-  scatterPoint: {x: 0, y: 0}
   PinkyScatterPoint: {x: -10, y: 10}
 --- !u!114 &1787645116673360478
 MonoBehaviour:
@@ -169,4 +183,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef7df01f0fc44cfbbd2964bbb3be53e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CurrentState: 0
+  CurrentStates: 5
+  lockedTime: 2

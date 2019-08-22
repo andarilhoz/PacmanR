@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
-using _PacmanGame.Scripts.Pathfind;
+using _PacmanGame.Scripts.Map;
 
-namespace _PacmanGame.Scripts.Actors.Ghosts
+namespace _PacmanGame.Scripts.Actors.Ghosts.Behaviours
 {
     public class Clyde : BaseGhost
     {
@@ -18,12 +18,12 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
         protected override void Start()
         {
             base.Start();
-            ghostState.ChangeState(GhostStates.Locked);
+            ghostState.InitializeLockedTimer();
         }
 
         protected override void ChasingIntersection()
         {
-            var intersections = currentNode.nodeIntersections;
+            var intersections = currentNode.NodeIntersections;
             var distanceMethod = ChooseDistanceMethod();
             var node = ChooseNode(distanceMethod, intersections.Left, intersections.Down, intersections.Right,
                 intersections.Up);

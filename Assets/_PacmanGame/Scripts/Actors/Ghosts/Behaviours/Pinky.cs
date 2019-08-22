@@ -1,7 +1,7 @@
 using UnityEngine;
-using _PacmanGame.Scripts.Pathfind;
+using _PacmanGame.Scripts.Map;
 
-namespace _PacmanGame.Scripts.Actors.Ghosts
+namespace _PacmanGame.Scripts.Actors.Ghosts.Behaviours
 {
     public class Pinky : BaseGhost
     {
@@ -16,12 +16,12 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
         protected override void Start()
         {
             base.Start();
-            ghostState.ChangeState(GhostStates.Locked);
+            ghostState.InitializeLockedTimer();
         }
 
         protected override void ChasingIntersection()
         {
-            var intersections = currentNode.nodeIntersections;
+            var intersections = currentNode.NodeIntersections;
             var node = ChooseNode(NodeDistanceFromAheadOfPacman, intersections.Left, intersections.Down,
                 intersections.Right, intersections.Up);
             var direction = GetNodeDirection(node);

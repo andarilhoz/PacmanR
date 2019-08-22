@@ -1,24 +1,24 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-
-[RequireComponent(typeof(Camera))]
-public class CameraAdjust : MonoBehaviour
+namespace _PacmanGame.Scripts.Camera
 {
-    private Camera cameraComponent;
-
-    private const float SCENE_WIDTH = 5.5f;
-
-    private void Awake()
+    [RequireComponent(typeof(UnityEngine.Camera))]
+    public class CameraAdjust : MonoBehaviour
     {
-        cameraComponent = GetComponent<Camera>();
-    }
+        private UnityEngine.Camera cameraComponent;
 
-    private void Start()
-    {
-        var unitsPerPixel = SCENE_WIDTH / Screen.width;
-        var desiredHalfHeight = 0.5f * unitsPerPixel * Screen.height;
-        cameraComponent.orthographicSize = desiredHalfHeight;
+        private const float SCENE_WIDTH = 5.5f;
+
+        private void Awake()
+        {
+            cameraComponent = GetComponent<UnityEngine.Camera>();
+        }
+
+        private void Start()
+        {
+            var unitsPerPixel = SCENE_WIDTH / Screen.width;
+            var desiredHalfHeight = 0.5f * unitsPerPixel * Screen.height;
+            cameraComponent.orthographicSize = desiredHalfHeight;
+        }
     }
 }

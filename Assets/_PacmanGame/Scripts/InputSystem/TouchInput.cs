@@ -7,8 +7,8 @@ namespace _PacmanGame.Scripts.InputSystem
     {
         public event Action<Vector2> OnInput;
 
-        public const float MAX_SWIPE_TIME = 0.5f;
-        public const float MIN_SWIPE_DISTANCE = 0.17f;
+        private const float MAX_SWIPE_TIME = 0.5f;
+        private const float MIN_SWIPE_DISTANCE = 0.17f;
 
         private Vector2 startPos;
         private float startTime;

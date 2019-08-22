@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace _PacmanGame.Scripts.Actors.Ghosts
+namespace _PacmanGame.Scripts.Actors.Ghosts.Behaviours
 {
     public class Blinky : BaseGhost
     {
@@ -20,7 +20,7 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
 
         protected override void ChasingIntersection()
         {
-            var intersections = currentNode.nodeIntersections;
+            var intersections = currentNode.NodeIntersections;
             var node = ChooseNode(NodeDistanceFromPacman, intersections.Left, intersections.Down, intersections.Right,
                 intersections.Up);
             var direction = GetNodeDirection(node);
