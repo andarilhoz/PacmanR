@@ -84,7 +84,7 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
 
         protected override void GetCurrentNode()
         {
-            if ( GhostState.ChangedStateTimer > 0 && PreviousNode.NodeIntersections != null &&
+            if ( GhostState.ChangedStateTimer > 0 && PreviousNode.NodeNeighbors != null &&
                  !GhostState.CurrentState.Equals(GhostStates.LeavingHouse) )
             {
                 return;
@@ -92,7 +92,8 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
 
             base.GetCurrentNode();
         }
-
+        
+        // will choose the best node given each ghost behaviour
         protected Node ChooseNode(Func<Node, float> compareFunction, params Node[] nodes)
         {
             var validNodes = new List<Node>();
@@ -118,24 +119,25 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
 
         protected Vector2 GetNodeDirection(Node node)
         {
-            if ( node == CurrentNode.NodeIntersections.Left )
+            if ( node == CurrentNode.NodeNeighbors.Left )
             {
                 return Vector2.left;
             }
 
-            if ( node == CurrentNode.NodeIntersections.Right )
+            if ( node == CurrentNode.NodeNeighbors.Right )
             {
                 return Vector2.right;
             }
 
-            if ( node == CurrentNode.NodeIntersections.Up )
+            if ( node == CurrentNode.NodeNeighbors.Up )
             {
                 return Vector2.up;
             }
 
             return Vector2.down;
         }
-
+        
+        // everytime the ghost went in an intersection, it has to choose a path based on its state
         private void Intersection()
         {
             switch (GhostState.CurrentState)
@@ -161,10 +163,11 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
         protected virtual void ChasingIntersection()
         {
         }
-
+        
+        
         private void AfraidIntersection()
         {
-            var intersections = CurrentNode.NodeIntersections;
+            var intersections = CurrentNode.NodeNeighbors;
             var chosedNode = ChooseNode(RandomFloat, intersections.Left, intersections.Down, intersections.Right,
                 intersections.Up);
             var direction = GetNodeDirection(chosedNode);
@@ -175,7 +178,7 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
 
         private void ScatterIntersection()
         {
-            var intersections = CurrentNode.NodeIntersections;
+            var intersections = CurrentNode.NodeNeighbors;
             var chosedNode = ChooseNode(NodeDistanceFromScatterPoint, intersections.Left, intersections.Down,
                 intersections.Right, intersections.Up);
             var direction = GetNodeDirection(chosedNode);
@@ -189,7 +192,7 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
                 GhostState.ChangeState(GhostStates.LeavingHouse);
             }
 
-            var intersections = CurrentNode.NodeIntersections;
+            var intersections = CurrentNode.NodeNeighbors;
             var chosedNode = ChooseNode(NodeDistanceFromGhostHouse, intersections.Left, intersections.Down,
                 intersections.Right, intersections.Up);
             var direction = GetNodeDirection(chosedNode);
@@ -253,7 +256,7 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
 
         public void ReverseDirection()
         {
-            if ( PreviousNode.NodeIntersections == null || PreviousNode.ThinWall || CurrentNode.ThinWall )
+            if ( PreviousNode.NodeNeighbors == null || PreviousNode.ThinWall || CurrentNode.ThinWall )
             {
                 return;
             }

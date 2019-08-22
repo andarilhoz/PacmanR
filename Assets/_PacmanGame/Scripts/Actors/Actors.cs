@@ -48,7 +48,7 @@ namespace _PacmanGame.Scripts.Actors
             }
 
             GetCurrentNode();
-            SetNextNode();
+            SetNextNodeBasedOnDirection();
             MoveActor();
         }
 
@@ -70,20 +70,20 @@ namespace _PacmanGame.Scripts.Actors
         {
             if ( direction == Vector2.left )
             {
-                return CurrentNode.NodeIntersections.Left;
+                return CurrentNode.NodeNeighbors.Left;
             }
 
             if ( direction == Vector2.right )
             {
-                return CurrentNode.NodeIntersections.Right;
+                return CurrentNode.NodeNeighbors.Right;
             }
 
             if ( direction == Vector2.up )
             {
-                return CurrentNode.NodeIntersections.Up;
+                return CurrentNode.NodeNeighbors.Up;
             }
 
-            return CurrentNode.NodeIntersections.Down;
+            return CurrentNode.NodeNeighbors.Down;
         }
 
         protected virtual void GetCurrentNode()
@@ -94,7 +94,7 @@ namespace _PacmanGame.Scripts.Actors
                 return;
             }
 
-            if ( StartingNode?.NodeIntersections == null )
+            if ( StartingNode?.NodeNeighbors == null )
             {
                 StartingNode = newNode;
             }
@@ -103,7 +103,7 @@ namespace _PacmanGame.Scripts.Actors
             CurrentNode = newNode;
         }
 
-        private void SetNextNode()
+        private void SetNextNodeBasedOnDirection()
         {
             NextNode = GetNodeInDirection(CurrentDirection);
         }
@@ -120,7 +120,7 @@ namespace _PacmanGame.Scripts.Actors
                 }
             }
 
-            var target = NextNode ?? CurrentNode;
+            var target = NextNode ?? CurrentNode; // if next node is a wall, move closest to the current node
 
             var movePosition = transform.localPosition;
 

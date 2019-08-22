@@ -45,7 +45,9 @@ namespace _PacmanGame.Scripts.Canvas
 
         private void Update()
         {
-            FadeIn();
+            //if player inputed an direction, will fade the black screen out
+            FadeOut();
+            //will do an countdown to start the game.
             CountDown();
         }
 
@@ -94,7 +96,7 @@ namespace _PacmanGame.Scripts.Canvas
             timerCountDown = TIMER_PAUSE;
         }
 
-        private void FadeIn()
+        private void FadeOut()
         {
             if ( FadeImage.color.a <= 0 || !fading )
             {

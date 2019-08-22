@@ -16,7 +16,7 @@ namespace _PacmanGame.Scripts.Map
 
         public Vector2 Position;
 
-        public Intersections NodeIntersections;
+        public Intersections NodeNeighbors;
         public bool ThinWall = false;
 
 
@@ -39,13 +39,14 @@ namespace _PacmanGame.Scripts.Map
             gridX = aGridX;
             gridY = aGridY;
         }
-
+        
+        // ghosts can only do a movement if are on a intersection 
         public bool IsIntersection
         {
             get
             {
-                var horizontal = NodeIntersections.Left != null || NodeIntersections.Right != null;
-                var vertical = NodeIntersections.Up != null || NodeIntersections.Down != null;
+                var horizontal = NodeNeighbors.Left != null || NodeNeighbors.Right != null;
+                var vertical = NodeNeighbors.Up != null || NodeNeighbors.Down != null;
                 return horizontal && vertical;
             }
         }

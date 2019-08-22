@@ -95,7 +95,6 @@ namespace _PacmanGame.Scripts.Actors
             await Task.Delay(TimeSpan.FromSeconds(.5f));
             Die?.Invoke();
             Animator.SetBool("IsAlive", false);
-            Debug.Log("Ouch i'm dead");
         }
 
         private void EatGhostCombo()
@@ -154,7 +153,7 @@ namespace _PacmanGame.Scripts.Actors
             lastDirectionTimeout -= Time.deltaTime;
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+        private void OnTriggerEnter2D(Collider2D other) //The Eating actions are made here.
         {
             if ( other.transform.CompareTag("PowerDot") )
             {

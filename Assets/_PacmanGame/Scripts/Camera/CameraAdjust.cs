@@ -2,6 +2,7 @@
 
 namespace _PacmanGame.Scripts.Camera
 {
+    //will support different devices resolution. (landscape)
     [RequireComponent(typeof(UnityEngine.Camera))]
     public class CameraAdjust : MonoBehaviour
     {

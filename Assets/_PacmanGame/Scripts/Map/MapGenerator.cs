@@ -19,16 +19,18 @@ namespace _PacmanGame.Scripts.Map
         public GameObject TeleportPrefab;
         public GameObject FruitSpawnPrefab;
 
-        public const float TILE_OFFSET = 0.255f;
-        private const float SCREEN_OFFSET = .125f;
+        public const float TILE_OFFSET = 0.255f; //approximately a square size.
+        private const float SCREEN_OFFSET = .125f; //fix to centralize the map on the screen 
 
         public static (int[,], Vector2[,]) GenerateMap()
         {
             var jsonData = ReadJson();
+            //on json we only need to draw half map, since it is mirrored.
             var map = DuplicateMap(jsonData);
             return (map, GetRealWorldPosMap(map));
         }
-
+        
+        //used to instantiate nodes later on, and also find wich node are corresponding to real world pos.
         private static Vector2[,] GetRealWorldPosMap(int[,] map)
         {
             var realWorldPos = new Vector2[map.GetLength(0), map.GetLength(1)];
@@ -202,7 +204,7 @@ namespace _PacmanGame.Scripts.Map
 
         private static int[,] ReadJson()
         {
-            /* Originally mad with Newtonsoft,
+            /* Originally made with Newtonsoft,
              * but since this is a no plugin/sdk project
              * i replaced it with regex.
              */

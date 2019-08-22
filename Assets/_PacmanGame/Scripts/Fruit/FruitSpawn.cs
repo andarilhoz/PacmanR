@@ -7,6 +7,7 @@ namespace _PacmanGame.Scripts.Fruit
     {
         public GameObject FruitPrefab;
 
+        //will drop fruit when player eat these amount of dots
         private readonly int[] pointsTrigger = {70, 150};
         private int fruitsDisplaced = 0;
 

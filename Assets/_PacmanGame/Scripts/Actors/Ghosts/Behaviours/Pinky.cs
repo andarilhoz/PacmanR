@@ -28,7 +28,7 @@ namespace _PacmanGame.Scripts.Actors.Ghosts.Behaviours
 
         protected override void ChasingIntersection()
         {
-            var intersections = CurrentNode.NodeIntersections;
+            var intersections = CurrentNode.NodeNeighbors;
             var node = ChooseNode(NodeDistanceFromAheadOfPacman, intersections.Left, intersections.Down,
                 intersections.Right, intersections.Up);
             var direction = GetNodeDirection(node);

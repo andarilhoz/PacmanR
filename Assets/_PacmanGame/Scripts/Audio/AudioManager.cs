@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 using _PacmanGame.Scripts.Actors;
 using _PacmanGame.Scripts.Canvas;
 
@@ -19,20 +20,31 @@ namespace _PacmanGame.Scripts.Audio
         public AudioSource OthersSource;
         public AudioSource Siren;
 
+        public Button AudioToggle;
+        public Image AudioToggleImage;
+        public Sprite MuteSprite;
+        public Sprite AudioSprite;
+
         private const float MUNCH_TOLERANCE = .3f;
+        private const float SIREN_LOWER_MULTIPLIER = .6f;
         private float munchCooldown;
 
         private const string VOLUME_PLAYERPREFS_KEY = "VOLUME";
+        private bool mute = false;
+        private float volume;
 
         private void Start()
         {
-            var volume = PlayerPrefs.GetFloat(VOLUME_PLAYERPREFS_KEY, .8f);
+            volume = PlayerPrefs.GetFloat(VOLUME_PLAYERPREFS_KEY, .8f);
 
             OthersSource.volume = volume;
             MunchSource.volume = volume;
+            Siren.volume = volume * SIREN_LOWER_MULTIPLIER;
 
             ListenToBindings();
             MunchSource.clip = Chomp;
+
+            AudioToggle.onClick.AddListener(ToggleAudio);
         }
 
         private void Update()
@@ -54,6 +66,16 @@ namespace _PacmanGame.Scripts.Audio
             RemoveBinding();
         }
 
+        private void ToggleAudio()
+        {
+            mute = !mute;
+            AudioToggleImage.sprite = mute ? MuteSprite : AudioSprite;
+            OthersSource.mute = mute;
+            MunchSource.mute = mute;
+            Siren.mute = mute;
+            
+        }
+        
         private void PlayMunch()
         {
             munchCooldown = MUNCH_TOLERANCE;

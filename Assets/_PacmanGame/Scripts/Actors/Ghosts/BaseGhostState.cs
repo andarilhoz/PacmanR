@@ -64,15 +64,19 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
             modeTimer = initialModeTimer;
             spriteRender.enabled = true;
         }
-
+        
+        //The timer before ghosts are alowed to leave the square
         public void InitializeLockedTimer()
         {
             modeTimer = LockedTime;
         }
-
+        
+        // states that could change on a brief moment
         public bool IsInUnstableState() =>
             CurrentState.Equals(GhostStates.Chasing) || CurrentState.Equals(GhostStates.Afraid);
-
+        
+        
+        //choose the next state based on the stateTimers list
         public void NextState()
         {
             if ( CurrentState.Equals(GhostStates.InHouse) )
@@ -92,7 +96,7 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
             modeTimer = stateTimers[stateIteraction].Item2;
             stateIteraction++;
         }
-
+        
         public void ChangeState(GhostStates newStates)
         {
             if ( newStates == CurrentState )
@@ -158,7 +162,8 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
             previousStates = CurrentState;
             CurrentState = newStates;
         }
-
+        
+        // inside middle square
         private bool InsideHouseStates() =>
             CurrentState.Equals(GhostStates.InHouse) || CurrentState.Equals(GhostStates.LeavingHouse);
 

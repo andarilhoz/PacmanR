@@ -7,6 +7,7 @@ namespace _PacmanGame.Scripts.Map
     {
         private readonly List<Node> nodes = new List<Node>();
 
+        // here are initialized the nodes and saved on a list
         public Grid(int[,] map, Vector2[,] realWorldPosGrid)
         {
             var grid = new Node[map.GetLength(0), map.GetLength(1)];
@@ -28,7 +29,8 @@ namespace _PacmanGame.Scripts.Map
                     grid[x, y] = node;
                 }
             }
-
+            
+            // here the teleports do reference each other
             var teleports = nodes.FindAll(n => n.IsTeleport);
             teleports[0].TwinTeleport = teleports[1];
 
@@ -36,19 +38,19 @@ namespace _PacmanGame.Scripts.Map
             {
                 for (var y = 0; y < grid.GetLength(1); y++)
                 {
-                    var nodeIntersections = new Node.Intersections()
+                    var nodeNeighbors = new Node.Intersections()
                     {
-                        Up = GetIntersection(grid, x, y, Vector2.up),
-                        Down = GetIntersection(grid, x, y, Vector2.down),
-                        Left = GetIntersection(grid, x, y, Vector2.left),
-                        Right = GetIntersection(grid, x, y, Vector2.right)
+                        Up = GetNeighbors(grid, x, y, Vector2.up),
+                        Down = GetNeighbors(grid, x, y, Vector2.down),
+                        Left = GetNeighbors(grid, x, y, Vector2.left),
+                        Right = GetNeighbors(grid, x, y, Vector2.right)
                     };
-                    grid[x, y].NodeIntersections = nodeIntersections;
+                    grid[x, y].NodeNeighbors = nodeNeighbors;
                 }
             }
         }
-
-        private static Node GetIntersection(Node[,] map, int x, int y, Vector2 direction)
+        
+        private static Node GetNeighbors(Node[,] map, int x, int y, Vector2 direction)
         {
             if ( direction == Vector2.up )
             {
