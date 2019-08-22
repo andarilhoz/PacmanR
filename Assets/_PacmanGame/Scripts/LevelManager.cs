@@ -33,12 +33,9 @@ namespace _PacmanGame.Scripts
 
         private bool wonGame = false;
         
-        private int lives = 2;
-        private const int MAX_LIVES = 5;
-
+    
         private Actors.Actors[] actors;
 
-        public List<GameObject> PacmanLivesImages;
 
         #region Singleton
 
@@ -72,35 +69,27 @@ namespace _PacmanGame.Scripts
             Initialize();
             InstructionsFadeout.StartGame += () => CurrentGameState = GameState.Playing;
             Pacman.EatDot += PacmanDotEat;
-            Pacman.Die += async () =>
-            {
-                CurrentGameState = GameState.Pause;
-                await Task.Delay(TimeSpan.FromSeconds(1.5f));
-                Die();
-            };
-            ScoreManager.ExtraLife += GainLive;
+
             wallMaterialOriginalColor = WallMaterial.color;
 
             actors = FindObjectsOfType<Actors.Actors>();
-            UpdateLives(lives);
         }
 
-        private void GainLive()
+        public void PauseGame()
         {
-            if ( lives >= MAX_LIVES )
-            {
-                return;
-            }
-
-            UpdateLives(++lives);
+            CurrentGameState = GameState.Pause;
+        }
+        
+        public void ResumeGame()
+        {
+            CurrentGameState = GameState.Playing;
         }
 
-        private void UpdateLives(int currentLives)
+        public void ResetActors()
         {
-            PacmanLivesImages.ForEach(l => l.SetActive(false));
-            for (var i = 0; i < currentLives; i++)
+            foreach (var actor in actors)
             {
-                PacmanLivesImages[i].SetActive(true);
+                actor.ResetActor();
             }
         }
 
@@ -112,24 +101,6 @@ namespace _PacmanGame.Scripts
             }
 
             WonGameAnimation();
-        }
-
-        private void Die()
-        {
-            if ( lives > 0 )
-            {
-                lives--;
-                UpdateLives(lives);
-                foreach (var actor in actors)
-                {
-                    actor.ResetActor();
-                }
-
-                CurrentGameState = GameState.Playing;
-                return;
-            }
-
-            ResetGame();
         }
 
         private void WonGameAnimation()
