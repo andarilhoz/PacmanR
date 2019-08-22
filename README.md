@@ -1,6 +1,7 @@
 # PacmanR
 
-Você pode jogar na web [aqui](https://redashes.itch.io/pacmanr)
+Você pode jogar na web [aqui](https://redashes.itch.io/pacmanr) (senha: magno)
+
 Ou baixar o .apk [aqui](https://drive.google.com/open?id=1E7Z-IQYOXLYQqF0f7UiMoaKrdP7yOCVV)
 
 A arquitetura inicial do projeto:
