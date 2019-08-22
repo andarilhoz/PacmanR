@@ -18,9 +18,6 @@ namespace _PacmanGame.Scripts.Actors
 
         private Rigidbody2D rb2D;
 
-        private Vector2 lastDirectionBuffer;
-        private float changeDirectionTimeout = 0.3f;
-        private float lastDirectionTimeout = 0;
 
         protected virtual void Awake()
         {
@@ -35,10 +32,9 @@ namespace _PacmanGame.Scripts.Actors
             currentSpeed = baseSpeed;
         }
 
-        protected void FixedUpdate()
+        protected virtual void FixedUpdate()
         {
             GetCurrentNode();
-            TryAgainChangeDirection();
             SetNextNode();
             MoveActor();
         }
@@ -46,17 +42,6 @@ namespace _PacmanGame.Scripts.Actors
         public virtual void ChangeDirection(Vector2 direction)
         {
             if ( direction == currentDirection )
-            {
-                return;
-            }
-
-            lastDirectionBuffer = direction;
-            if ( lastDirectionTimeout <= 0 )
-            {
-                lastDirectionTimeout = changeDirectionTimeout;
-            }
-
-            if ( !IsDirectionAvailable(direction) )
             {
                 return;
             }
@@ -104,20 +89,6 @@ namespace _PacmanGame.Scripts.Actors
         private void SetNextNode()
         {
             nextNode = GetNodeInDirection(currentDirection);
-        }
-
-
-        //TODO add a summary
-        private void TryAgainChangeDirection()
-        {
-            if ( lastDirectionTimeout <= 0 )
-            {
-                lastDirectionTimeout = 0;
-                return;
-            }
-
-            ChangeDirection(lastDirectionBuffer);
-            lastDirectionTimeout -= Time.deltaTime;
         }
 
         private void MoveActor()

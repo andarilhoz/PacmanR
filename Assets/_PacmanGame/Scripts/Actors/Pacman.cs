@@ -2,7 +2,7 @@ using System;
 using TMPro;
 using UnityEngine;
 using _PacmanGame.Scripts.Actors.Ghosts;
-using _PacmanGame.Scripts.Input;
+using _PacmanGame.Scripts.InputSystem;
 using _PacmanGame.Scripts.Pathfind;
 using _PacmanGame.Scripts.Score;
 
@@ -11,7 +11,8 @@ namespace _PacmanGame.Scripts.Actors
     public class Pacman : Actors
     {
         public bool isAlive;
-        public KeyboardInput InputControll;
+        public KeyboardInput KeyboardInputControll;
+        public TouchInput TouchInputControll;
 
         public static event Action EatPowerDot;
         public static event Action<int> AddScore;
@@ -21,10 +22,16 @@ namespace _PacmanGame.Scripts.Actors
         private int comboCounter = 0;
         private readonly int[] comboValues = {200, 400, 800, 1600};
 
+
+        private Vector2 lastDirectionBuffer;
+        private float changeDirectionTimeout = 0.3f;
+        private float lastDirectionTimeout = 0;
+
         protected override void Awake()
         {
             base.Awake();
-            InputControll.OnInput += ChangeDirection;
+            KeyboardInputControll.OnInput += ChangeDirection;
+            TouchInputControll.OnInput += ChangeDirection;
             BaseGhost.TouchGhost += TouchedGhost;
         }
 
@@ -37,6 +44,12 @@ namespace _PacmanGame.Scripts.Actors
         private void Update()
         {
             ComboTimerChecker();
+        }
+
+        protected override void FixedUpdate()
+        {
+            base.FixedUpdate();
+            TryAgainChangeDirection();
         }
 
         private void ComboTimerChecker()
@@ -82,12 +95,39 @@ namespace _PacmanGame.Scripts.Actors
                 return;
             }
 
+
+            lastDirectionBuffer = direction;
+            if ( lastDirectionTimeout <= 0 )
+            {
+                lastDirectionTimeout = changeDirectionTimeout;
+            }
+
+            if ( !IsDirectionAvailable(direction) )
+            {
+                return;
+            }
+
             base.ChangeDirection(direction);
 
             var rotate = currentDirection == Vector2.left ? 180 :
                 currentDirection == Vector2.down ? 270 :
                 currentDirection == Vector2.up ? 90 : 0;
             transform.localRotation = Quaternion.Euler(0, 0, rotate);
+        }
+
+        /// <summary>
+        /// This method trys to repeat player move to give a more fluid feeling. 
+        /// </summary>
+        private void TryAgainChangeDirection()
+        {
+            if ( lastDirectionTimeout <= 0 )
+            {
+                lastDirectionTimeout = 0;
+                return;
+            }
+
+            ChangeDirection(lastDirectionBuffer);
+            lastDirectionTimeout -= Time.deltaTime;
         }
 
         private void OnTriggerEnter2D(Collider2D other)

@@ -18,6 +18,8 @@ namespace _PacmanGame.Scripts.Score
         private float comboTextTimer;
         private bool textOn = false;
 
+        private const string PLAYER_PREFS_HIGHSCORE_KEY = "PACMANHIGHSCORE";
+
         #region Singleton
 
         private static ScoreManager instance;
@@ -48,10 +50,15 @@ namespace _PacmanGame.Scripts.Score
 
         private void Initialize()
         {
-            /* TODO save highscore in playerpref */
             Pacman.AddScore += UpdateScore;
             UpdateScore(0);
-            UpdateHighScore(0);
+            SetSavedHighScore();
+        }
+
+        private void SetSavedHighScore()
+        {
+            var savedHighScore = PlayerPrefs.GetInt(PLAYER_PREFS_HIGHSCORE_KEY, 0);
+            UpdateHighScore(savedHighScore);
         }
 
         public void UpdateScore(int value)
@@ -68,6 +75,7 @@ namespace _PacmanGame.Scripts.Score
         {
             highScore = number;
             HighScoreText.text = highScore.ToString();
+            PlayerPrefs.SetInt(PLAYER_PREFS_HIGHSCORE_KEY, number);
         }
 
         private void Update()

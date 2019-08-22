@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace _PacmanGame.Scripts.Input
+namespace _PacmanGame.Scripts.InputSystem
 {
     public interface IInputControll
     {

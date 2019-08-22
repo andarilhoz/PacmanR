@@ -19,6 +19,8 @@ namespace _PacmanGame.Scripts
         public GameObject TeleportPrefab;
 
         public const float TILE_OFFSET = 0.255f;
+        public const float SCREEN_OFFSET = .125f;
+
 
         public (int[,], Vector2[,]) GenerateMap()
         {
@@ -98,7 +100,7 @@ namespace _PacmanGame.Scripts
             var yOffset = data.GetLength(0) * TILE_OFFSET / 2;
             var xOffset = data.GetLength(1) * TILE_OFFSET / 2;
 
-            return new Vector2(column * TILE_OFFSET - xOffset, row * TILE_OFFSET - yOffset);
+            return new Vector2(column * TILE_OFFSET - xOffset + SCREEN_OFFSET, row * TILE_OFFSET - yOffset);
         }
 
         private void InstantiateArray(int[,] data, Vector2[,] realWorldPos,
