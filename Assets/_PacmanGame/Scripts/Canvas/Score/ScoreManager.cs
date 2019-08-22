@@ -9,10 +9,13 @@ namespace _PacmanGame.Scripts.Score
         public TextMeshProUGUI HighScoreText;
         public TextMeshProUGUI CurrentScoreText;
 
-        public TextMeshProUGUI ghostComboText;
+        public TextMeshProUGUI comboText;
+
+        public Color ghostPointColor;
+        public Color fruitPointColor;
 
         private int highScore;
-        private int currentScore;
+        public int CurrentScore;
 
         private float comboTextShowingTime = 1f;
         private float comboTextTimer;
@@ -63,11 +66,11 @@ namespace _PacmanGame.Scripts.Score
 
         public void UpdateScore(int value)
         {
-            currentScore += value;
-            CurrentScoreText.text = currentScore.ToString();
-            if ( currentScore > highScore )
+            CurrentScore += value;
+            CurrentScoreText.text = CurrentScore.ToString();
+            if ( CurrentScore > highScore )
             {
-                UpdateHighScore(currentScore);
+                UpdateHighScore(CurrentScore);
             }
         }
 
@@ -82,18 +85,19 @@ namespace _PacmanGame.Scripts.Score
         {
             if ( comboTextTimer <= 0 && textOn )
             {
-                ghostComboText.transform.position = new Vector2(100, 100);
+                comboText.transform.position = new Vector2(100, 100);
                 return;
             }
 
             comboTextTimer -= Time.deltaTime;
         }
 
-        public void SetComboText(string text, Vector2 postion)
+        public void SetComboText(string text, Vector2 postion, bool isGhost)
         {
             comboTextTimer = comboTextShowingTime;
-            ghostComboText.text = text;
-            ghostComboText.transform.position = postion;
+            comboText.text = text;
+            comboText.color = isGhost ? ghostPointColor : fruitPointColor;
+            comboText.transform.position = postion;
             textOn = true;
         }
     }

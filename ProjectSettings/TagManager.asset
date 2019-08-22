@@ -8,6 +8,7 @@ TagManager:
   - Dot
   - Teleport
   - PowerDot
+  - Fruit
   layers:
   - Default
   - TransparentFX

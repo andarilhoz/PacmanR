@@ -39,6 +39,11 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
         protected new void FixedUpdate()
         {
             base.FixedUpdate();
+            
+            if ( LevelManager.Instance.CurrentGameState.Equals(LevelManager.GameState.Pause) )
+            {
+                return;
+            }
 
             if ( ghostState.CurrentStates.Equals(GhostStates.Locked) )
             {

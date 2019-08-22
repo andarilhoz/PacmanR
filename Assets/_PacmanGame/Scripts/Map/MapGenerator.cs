@@ -17,6 +17,7 @@ namespace _PacmanGame.Scripts
         public GameObject InkyPrefab;
         public GameObject ClydePrefab;
         public GameObject TeleportPrefab;
+        public GameObject FruitSpawnPrefab;
 
         public const float TILE_OFFSET = 0.255f;
         public const float SCREEN_OFFSET = .125f;
@@ -49,6 +50,7 @@ namespace _PacmanGame.Scripts
             var itemDictionary = new Dictionary<ItemTypes, GameObject>
             {
                 {ItemTypes.Empty, null},
+                {ItemTypes.FruitSpawn, FruitSpawnPrefab},
                 {ItemTypes.Wall, WallPrefab},
                 {ItemTypes.Point, PointPrefab},
                 {ItemTypes.PowerDot, PowerDotPrefab},

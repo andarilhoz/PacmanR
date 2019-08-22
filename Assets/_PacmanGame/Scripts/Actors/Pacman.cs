@@ -11,7 +11,9 @@ namespace _PacmanGame.Scripts.Actors
         public bool isAlive;
 
         public static event Action EatPowerDot;
+        public static event Action EatDot;
         public static event Action<int> AddScore;
+        public static event Action EatFruit;
 
         public float ghostEatComboTimer = 2f;
         private float comboTimer = 0;
@@ -79,7 +81,7 @@ namespace _PacmanGame.Scripts.Actors
         {
             comboTimer = ghostEatComboTimer;
             comboCounter++;
-            ScoreManager.Instance.SetComboText(comboValues[comboCounter - 1].ToString(), transform.position);
+            ScoreManager.Instance.SetComboText(comboValues[comboCounter - 1].ToString(), transform.position, true);
             AddScore?.Invoke(comboValues[comboCounter - 1]);
         }
 
@@ -127,10 +129,6 @@ namespace _PacmanGame.Scripts.Actors
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if ( !other.transform.CompareTag("Dot") && !other.transform.CompareTag("PowerDot") )
-            {
-                return;
-            }
 
             if ( other.transform.CompareTag("PowerDot") )
             {
@@ -140,8 +138,24 @@ namespace _PacmanGame.Scripts.Actors
                 return;
             }
 
-            Destroy(other.gameObject);
-            AddScore?.Invoke(1);
+            if ( other.transform.CompareTag("Fruit") )
+            {
+                EatFruit?.Invoke();
+                AddScore?.Invoke(100);
+                ScoreManager.Instance.SetComboText("100", transform.position, false);
+                Destroy(other.gameObject);
+                return;
+            }
+
+            if ( other.transform.CompareTag("Dot") )
+            {
+                Destroy(other.gameObject);
+                AddScore?.Invoke(1);
+                EatDot?.Invoke();    
+            }
+
+            return;
+
         }
     }
 }

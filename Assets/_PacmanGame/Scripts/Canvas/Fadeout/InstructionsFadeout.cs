@@ -47,6 +47,11 @@ public class InstructionsFadeout : MonoBehaviour
 
     private void CountDown()
     {
+        if ( !fading )
+        {
+            return;
+        }
+
         if ( timerCountDown >= 0 )
         {
             timerCountDown -= Time.deltaTime;
