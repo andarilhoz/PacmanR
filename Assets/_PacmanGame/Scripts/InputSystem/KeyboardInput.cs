@@ -6,6 +6,33 @@ namespace _PacmanGame.Scripts.InputSystem
     public class KeyboardInput : MonoBehaviour, IInputControll
     {
         public event Action<Vector2> OnInput;
+        
+        #region Singleton
+
+        private static KeyboardInput instance;
+
+        public static KeyboardInput Instance
+        {
+            get
+            {
+                if ( instance == null )
+                {
+                    instance = GameObject.FindObjectOfType<KeyboardInput>();
+                }
+
+                return instance;
+            }
+        }
+
+        private void Awake()
+        {
+            if ( instance == null )
+            {
+                instance = this;
+            }
+        }
+
+        #endregion
 
         private void Update()
         {

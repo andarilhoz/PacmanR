@@ -12,6 +12,8 @@ namespace _PacmanGame.Scripts
         public Grid LevelGrid { get; set; }
         public int[,] rowMap { get; set; }
         public Vector2[,] realWorldPosMap { get; set; }
+        
+        public GameState CurrentGameState = GameState.Pause;
 
         #region Singleton
 
@@ -43,6 +45,7 @@ namespace _PacmanGame.Scripts
         private void Start()
         {
             Initialize();
+            InstructionsFadeout.StartGame += () => CurrentGameState = GameState.Playing;
         }
 
         public void Initialize()
@@ -50,6 +53,12 @@ namespace _PacmanGame.Scripts
             (rowMap, realWorldPosMap) = MapGenerator.GenerateMap();
             LevelGrid = new Grid(rowMap, realWorldPosMap);
             MapGenerator.InstantiateMap(rowMap, realWorldPosMap);
+        }
+
+        public enum GameState
+        {
+            Playing = 0,
+            Pause = 1,
         }
     }
 }

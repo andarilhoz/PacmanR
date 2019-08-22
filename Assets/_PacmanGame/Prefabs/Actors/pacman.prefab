@@ -12,8 +12,6 @@ GameObject:
   - component: {fileID: 1047537843481019620}
   - component: {fileID: 1047537843481019623}
   - component: {fileID: 8177536237299089216}
-  - component: {fileID: 1074196302798739439}
-  - component: {fileID: 7993811892319462853}
   - component: {fileID: 3260159141105034954}
   - component: {fileID: 5716200270135963655}
   m_Layer: 0
@@ -135,33 +133,7 @@ MonoBehaviour:
   currentDirection: {x: -1, y: 0}
   animator: {fileID: 1047537843481019623}
   isAlive: 0
-  KeyboardInputControll: {fileID: 1074196302798739439}
-  TouchInputControll: {fileID: 7993811892319462853}
   ghostEatComboTimer: 2
---- !u!114 &1074196302798739439
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1047537843481019622}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad40fea9166c4431828c0832581f995f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &7993811892319462853
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1047537843481019622}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 324dfbf0aa034908ba75ffa08f723d56, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!58 &3260159141105034954
 CircleCollider2D:
   m_ObjectHideFlags: 0

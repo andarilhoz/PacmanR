@@ -1,9 +1,7 @@
 using System;
-using TMPro;
 using UnityEngine;
 using _PacmanGame.Scripts.Actors.Ghosts;
 using _PacmanGame.Scripts.InputSystem;
-using _PacmanGame.Scripts.Pathfind;
 using _PacmanGame.Scripts.Score;
 
 namespace _PacmanGame.Scripts.Actors
@@ -11,8 +9,6 @@ namespace _PacmanGame.Scripts.Actors
     public class Pacman : Actors
     {
         public bool isAlive;
-        public KeyboardInput KeyboardInputControll;
-        public TouchInput TouchInputControll;
 
         public static event Action EatPowerDot;
         public static event Action<int> AddScore;
@@ -22,7 +18,6 @@ namespace _PacmanGame.Scripts.Actors
         private int comboCounter = 0;
         private readonly int[] comboValues = {200, 400, 800, 1600};
 
-
         private Vector2 lastDirectionBuffer;
         private float changeDirectionTimeout = 0.3f;
         private float lastDirectionTimeout = 0;
@@ -30,8 +25,8 @@ namespace _PacmanGame.Scripts.Actors
         protected override void Awake()
         {
             base.Awake();
-            KeyboardInputControll.OnInput += ChangeDirection;
-            TouchInputControll.OnInput += ChangeDirection;
+            KeyboardInput.Instance.OnInput += ChangeDirection;
+            TouchInput.Instance.OnInput += ChangeDirection;
             BaseGhost.TouchGhost += TouchedGhost;
         }
 

@@ -34,6 +34,10 @@ namespace _PacmanGame.Scripts.Actors
 
         protected virtual void FixedUpdate()
         {
+            if ( LevelManager.Instance.CurrentGameState.Equals(LevelManager.GameState.Pause) )
+            {
+                return;
+            }
             GetCurrentNode();
             SetNextNode();
             MoveActor();

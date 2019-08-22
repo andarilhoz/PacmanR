@@ -12,6 +12,33 @@ namespace _PacmanGame.Scripts.InputSystem
 
         private Vector2 startPos;
         private float startTime;
+        
+        #region Singleton
+
+        private static TouchInput instance;
+
+        public static TouchInput Instance
+        {
+            get
+            {
+                if ( instance == null )
+                {
+                    instance = GameObject.FindObjectOfType<TouchInput>();
+                }
+
+                return instance;
+            }
+        }
+
+        private void Awake()
+        {
+            if ( instance == null )
+            {
+                instance = this;
+            }
+        }
+
+        #endregion
 
         public void Update()
         {
