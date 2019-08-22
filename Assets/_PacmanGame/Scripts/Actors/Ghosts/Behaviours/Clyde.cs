@@ -12,24 +12,24 @@ namespace _PacmanGame.Scripts.Actors.Ghosts.Behaviours
         protected override void Awake()
         {
             base.Awake();
-            scatterPoint = PinkyScatterPoint;
+            ScatterPoint = PinkyScatterPoint;
         }
 
         protected override void Start()
         {
             base.Start();
-            ghostState.InitializeLockedTimer();
+            GhostState.InitializeLockedTimer();
         }
-        
+
         public override void ResetActor()
         {
             base.ResetActor();
-            ghostState.InitializeLockedTimer();
+            GhostState.InitializeLockedTimer();
         }
 
         protected override void ChasingIntersection()
         {
-            var intersections = currentNode.NodeIntersections;
+            var intersections = CurrentNode.NodeIntersections;
             var distanceMethod = ChooseDistanceMethod();
             var node = ChooseNode(distanceMethod, intersections.Left, intersections.Down, intersections.Right,
                 intersections.Up);

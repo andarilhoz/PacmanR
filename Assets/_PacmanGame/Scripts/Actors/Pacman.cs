@@ -9,8 +9,6 @@ namespace _PacmanGame.Scripts.Actors
 {
     public class Pacman : Actors
     {
-        public bool isAlive;
-
         public static event Action EatPowerDot;
         public static event Action Die;
         public static event Action EatDot;
@@ -18,13 +16,13 @@ namespace _PacmanGame.Scripts.Actors
         public static event Action EatFruit;
         public static event Action<int> AddScore;
 
-        public float ghostEatComboTimer = 2f;
+        public float GhostEatComboTimer = 2f;
         private float comboTimer = 0;
         private int comboCounter = 0;
         private readonly int[] comboValues = {200, 400, 800, 1600};
 
         private Vector2 lastDirectionBuffer;
-        private float changeDirectionTimeout = 0.3f;
+        private const float CHANGE_DIRECTION_TIMEOUT = 0.3f;
         private float lastDirectionTimeout = 0;
 
         protected override void Awake()
@@ -38,7 +36,7 @@ namespace _PacmanGame.Scripts.Actors
         protected override void Start()
         {
             base.Start();
-            ChangeDirection(currentDirection);
+            ChangeDirection(CurrentDirection);
         }
 
         private void Update()
@@ -51,7 +49,7 @@ namespace _PacmanGame.Scripts.Actors
             base.FixedUpdate();
             TryAgainChangeDirection();
         }
-        
+
         private void OnDestroy()
         {
             EatPowerDot = () => { };
@@ -65,7 +63,7 @@ namespace _PacmanGame.Scripts.Actors
         public override void ResetActor()
         {
             base.ResetActor();
-            animator.SetBool("IsAlive", true);
+            Animator.SetBool("IsAlive", true);
             ChangeDirection(Vector2.left);
         }
 
@@ -96,13 +94,13 @@ namespace _PacmanGame.Scripts.Actors
             LevelManager.Instance.CurrentGameState = LevelManager.GameState.Pause;
             await Task.Delay(TimeSpan.FromSeconds(.5f));
             Die?.Invoke();
-            animator.SetBool("IsAlive", false);
+            Animator.SetBool("IsAlive", false);
             Debug.Log("Ouch i'm dead");
         }
 
         private void EatGhostCombo()
         {
-            comboTimer = ghostEatComboTimer;
+            comboTimer = GhostEatComboTimer;
             comboCounter++;
             EatGhost?.Invoke();
             ScoreManager.Instance.SetComboText(comboValues[comboCounter - 1].ToString(), transform.position, true);
@@ -120,7 +118,7 @@ namespace _PacmanGame.Scripts.Actors
             lastDirectionBuffer = direction;
             if ( lastDirectionTimeout <= 0 )
             {
-                lastDirectionTimeout = changeDirectionTimeout;
+                lastDirectionTimeout = CHANGE_DIRECTION_TIMEOUT;
             }
 
             if ( !IsDirectionAvailable(direction) )
@@ -130,9 +128,9 @@ namespace _PacmanGame.Scripts.Actors
 
             base.ChangeDirection(direction);
 
-            var rotate = currentDirection == Vector2.left ? 180 :
-                currentDirection == Vector2.down ? 270 :
-                currentDirection == Vector2.up ? 90 : 0;
+            var rotate = CurrentDirection == Vector2.left ? 180 :
+                CurrentDirection == Vector2.down ? 270 :
+                CurrentDirection == Vector2.up ? 90 : 0;
             transform.localRotation = Quaternion.Euler(0, 0, rotate);
         }
 
@@ -141,6 +139,11 @@ namespace _PacmanGame.Scripts.Actors
         /// </summary>
         private void TryAgainChangeDirection()
         {
+            if ( !CurrentNode.IsIntersection )
+            {
+                return;
+            }
+
             if ( lastDirectionTimeout <= 0 )
             {
                 lastDirectionTimeout = 0;
@@ -153,11 +156,10 @@ namespace _PacmanGame.Scripts.Actors
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-
             if ( other.transform.CompareTag("PowerDot") )
             {
                 EatPowerDot?.Invoke();
-                EatDot?.Invoke();    
+                EatDot?.Invoke();
                 Destroy(other.gameObject);
                 AddScore?.Invoke(50);
                 return;
@@ -176,11 +178,10 @@ namespace _PacmanGame.Scripts.Actors
             {
                 Destroy(other.gameObject);
                 AddScore?.Invoke(1);
-                EatDot?.Invoke();    
+                EatDot?.Invoke();
             }
 
             return;
-
         }
     }
 }

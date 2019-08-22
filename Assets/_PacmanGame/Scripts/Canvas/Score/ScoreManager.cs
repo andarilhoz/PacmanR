@@ -17,13 +17,13 @@ namespace _PacmanGame.Scripts.Canvas.Score
 
         private int highScore;
         public int CurrentScore;
-        
-        
+
+
         private const int EXTRA_LIFE_POINTS = 1000;
         public static event Action ExtraLife;
         private int lastExtraLife = 0;
 
-        private float comboTextShowingTime = 1f;
+        private const float COMBO_TEXT_SHOWING_TIME = 1f;
         private float comboTextTimer;
         private bool textOn = false;
 
@@ -118,7 +118,7 @@ namespace _PacmanGame.Scripts.Canvas.Score
 
         public void SetComboText(string text, Vector2 postion, bool isGhost)
         {
-            comboTextTimer = comboTextShowingTime;
+            comboTextTimer = COMBO_TEXT_SHOWING_TIME;
             ComboText.text = text;
             ComboText.color = isGhost ? GhostPointColor : FruitPointColor;
             ComboText.transform.position = postion;

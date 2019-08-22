@@ -12,7 +12,7 @@ namespace _PacmanGame.Scripts.InputSystem
 
         private Vector2 startPos;
         private float startTime;
-        
+
         #region Singleton
 
         private static TouchInput instance;

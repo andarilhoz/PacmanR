@@ -12,7 +12,7 @@ namespace _PacmanGame.Scripts.Map
         public bool IsTeleport;
         private Node twinTeleport;
 
-        public bool isLeft;
+        public bool IsLeft;
 
         public Vector2 Position;
 
@@ -26,8 +26,8 @@ namespace _PacmanGame.Scripts.Map
             set
             {
                 value.twinTeleport = this;
-                value.isLeft = Position.x > value.Position.x;
-                isLeft = Position.x < value.Position.x;
+                value.IsLeft = Position.x > value.Position.x;
+                IsLeft = Position.x < value.Position.x;
                 twinTeleport = value;
             }
         }

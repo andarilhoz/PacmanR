@@ -8,9 +8,9 @@ namespace _PacmanGame.Scripts.Canvas.Fadeout
 {
     public class InstructionsFadeout : MonoBehaviour
     {
-        public TextMeshProUGUI description;
+        public TextMeshProUGUI Description;
         public TextMeshProUGUI Timer;
-        public Image fadeImage;
+        public Image FadeImage;
 
         public static event Action StartGame;
         public static event Action StartIntro;
@@ -25,16 +25,16 @@ namespace _PacmanGame.Scripts.Canvas.Fadeout
 
         private bool timerEnd = false;
 
-        // Start is called before the first frame update
+        
         private void Start()
         {
             if ( Application.platform.Equals(RuntimePlatform.Android) )
             {
-                description.text = TOUCH_INPUT_DESCRIPTION;
+                Description.text = TOUCH_INPUT_DESCRIPTION;
             }
             else
             {
-                description.text = KEYBOARD_INPUT_DESCRIPTION;
+                Description.text = KEYBOARD_INPUT_DESCRIPTION;
             }
 
             timerCountDown = TIMER_PAUSE;
@@ -88,7 +88,7 @@ namespace _PacmanGame.Scripts.Canvas.Fadeout
 
             fading = true;
             StartIntro?.Invoke();
-            description.gameObject.SetActive(false);
+            Description.gameObject.SetActive(false);
             Timer.gameObject.SetActive(true);
 
             timerCountDown = TIMER_PAUSE;
@@ -96,15 +96,15 @@ namespace _PacmanGame.Scripts.Canvas.Fadeout
 
         private void FadeIn()
         {
-            if ( fadeImage.color.a <= 0 || !fading )
+            if ( FadeImage.color.a <= 0 || !fading )
             {
                 return;
             }
 
-            fadeImage.color = new Color(fadeImage.color.r, fadeImage.color.g, fadeImage.color.b,
-                fadeImage.color.a - Time.deltaTime);
-            description.color = new Color(description.color.r, description.color.g, description.color.b,
-                description.color.a - Time.deltaTime);
+            FadeImage.color = new Color(FadeImage.color.r, FadeImage.color.g, FadeImage.color.b,
+                FadeImage.color.a - Time.deltaTime);
+            Description.color = new Color(Description.color.r, Description.color.g, Description.color.b,
+                Description.color.a - Time.deltaTime);
         }
     }
 }

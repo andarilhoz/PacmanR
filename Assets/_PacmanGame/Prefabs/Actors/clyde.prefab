@@ -112,7 +112,7 @@ CircleCollider2D:
   m_GameObject: {fileID: 4270252720799458573}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 6200000, guid: f9ef5c34ef7e9864188d6ee0e5b13141, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -135,7 +135,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 0
-  m_Material: {fileID: 6200000, guid: f9ef5c34ef7e9864188d6ee0e5b13141, type: 2}
+  m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -152,24 +152,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 345f453066f9402f9535ae5205f1254e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  previousNode:
+  PreviousNode:
     IsTeleport: 0
     isLeft: 0
     Position: {x: 0, y: 0}
     ThinWall: 0
-  currentNode:
+  CurrentNode:
     IsTeleport: 0
     isLeft: 0
     Position: {x: 0, y: 0}
     ThinWall: 0
-  nextNode:
+  NextNode:
     IsTeleport: 0
     isLeft: 0
     Position: {x: 0, y: 0}
     ThinWall: 0
-  baseSpeed: 0.9
-  currentDirection: {x: 0, y: 1}
-  animator: {fileID: 4270252720799458572}
+  BaseSpeed: 0.9
+  CurrentDirection: {x: 0, y: 1}
+  Animator: {fileID: 4270252720799458572}
   StartingNode:
     IsTeleport: 0
     isLeft: 0
@@ -189,4 +189,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentState: 5
-  lockedTime: 6
+  LockedTime: 0

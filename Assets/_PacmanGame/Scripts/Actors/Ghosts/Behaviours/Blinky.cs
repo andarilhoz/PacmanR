@@ -9,25 +9,25 @@ namespace _PacmanGame.Scripts.Actors.Ghosts.Behaviours
         protected override void Awake()
         {
             base.Awake();
-            scatterPoint = BlinkyScatterPoint;
+            ScatterPoint = BlinkyScatterPoint;
         }
 
         protected override void Start()
         {
             base.Start();
-            ghostState.NextState();
+            GhostState.NextState();
         }
-        
+
         public override void ResetActor()
         {
             base.ResetActor();
-            scatterPoint = BlinkyScatterPoint;
-            ghostState.NextState();
+            ScatterPoint = BlinkyScatterPoint;
+            GhostState.NextState();
         }
 
         protected override void ChasingIntersection()
         {
-            var intersections = currentNode.NodeIntersections;
+            var intersections = CurrentNode.NodeIntersections;
             var node = ChooseNode(NodeDistanceFromPacman, intersections.Left, intersections.Down, intersections.Right,
                 intersections.Up);
             var direction = GetNodeDirection(node);

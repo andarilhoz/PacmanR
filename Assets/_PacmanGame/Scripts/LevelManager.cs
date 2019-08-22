@@ -22,24 +22,23 @@ namespace _PacmanGame.Scripts
 
         private int eatenDots = 0;
         private int maxDots;
-        
-        public Material wallMaterial;
+
+        public Material WallMaterial;
         private Color wallMaterialOriginalColor;
-        private float wallFlashFrequency = .3f;
+        private const float WALL_FLASH_FREQUENCY = .3f;
         private float flashTimer = 0;
 
-        private int flashMaxTimes = 5;
+        private const int FLASH_MAX_TIMES = 5;
         private int flashTimes = 0;
 
         private bool wonGame = false;
-        private bool looseGame = false;
-
+        
         private int lives = 2;
-        private int maxLives = 5;
+        private const int MAX_LIVES = 5;
 
         private Actors.Actors[] actors;
 
-        public List<GameObject> pacmanLivesImages;
+        public List<GameObject> PacmanLivesImages;
 
         #region Singleton
 
@@ -80,7 +79,7 @@ namespace _PacmanGame.Scripts
                 Die();
             };
             ScoreManager.ExtraLife += GainLive;
-            wallMaterialOriginalColor = wallMaterial.color;
+            wallMaterialOriginalColor = WallMaterial.color;
 
             actors = FindObjectsOfType<Actors.Actors>();
             UpdateLives(lives);
@@ -88,30 +87,31 @@ namespace _PacmanGame.Scripts
 
         private void GainLive()
         {
-            if ( lives >= maxLives )
+            if ( lives >= MAX_LIVES )
             {
                 return;
             }
-            
+
             UpdateLives(++lives);
         }
 
         private void UpdateLives(int currentLives)
         {
-            pacmanLivesImages.ForEach(l => l.SetActive(false));
+            PacmanLivesImages.ForEach(l => l.SetActive(false));
             for (var i = 0; i < currentLives; i++)
             {
-                pacmanLivesImages[i].SetActive(true);    
+                PacmanLivesImages[i].SetActive(true);
             }
         }
 
-        private async void Update()
+        private void Update()
         {
-            if ( wonGame )
+            if ( !wonGame )
             {
-                WonGameAnimation();
                 return;
             }
+
+            WonGameAnimation();
         }
 
         private void Die()
@@ -124,9 +124,11 @@ namespace _PacmanGame.Scripts
                 {
                     actor.ResetActor();
                 }
+
                 CurrentGameState = GameState.Playing;
                 return;
             }
+
             ResetGame();
         }
 
@@ -135,7 +137,7 @@ namespace _PacmanGame.Scripts
             if ( flashTimer <= 0 )
             {
                 FlashWallMaterial();
-                flashTimer = wallFlashFrequency;
+                flashTimer = WALL_FLASH_FREQUENCY;
                 return;
             }
 
@@ -145,7 +147,7 @@ namespace _PacmanGame.Scripts
         private void PacmanDotEat()
         {
             eatenDots++;
-            
+
             if ( eatenDots < maxDots )
             {
                 return;
@@ -157,14 +159,14 @@ namespace _PacmanGame.Scripts
 
         public void FlashWallMaterial()
         {
-            if ( flashTimes > flashMaxTimes )
+            if ( flashTimes > FLASH_MAX_TIMES )
             {
                 ResetGame();
-                wallMaterial.color = wallMaterialOriginalColor;
+                WallMaterial.color = wallMaterialOriginalColor;
                 return;
             }
 
-            wallMaterial.color = wallMaterial.color == Color.white ? wallMaterialOriginalColor : Color.white;
+            WallMaterial.color = WallMaterial.color == Color.white ? wallMaterialOriginalColor : Color.white;
             flashTimes++;
         }
 

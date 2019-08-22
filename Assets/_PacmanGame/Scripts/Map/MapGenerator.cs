@@ -22,21 +22,21 @@ namespace _PacmanGame.Scripts.Map
         public const float TILE_OFFSET = 0.255f;
         private const float SCREEN_OFFSET = .125f;
 
-        public (int[,], Vector2[,]) GenerateMap()
+        public static (int[,], Vector2[,]) GenerateMap()
         {
             var jsonData = ReadJson();
             var map = DuplicateMap(jsonData);
             return (map, GetRealWorldPosMap(map));
         }
 
-        private Vector2[,] GetRealWorldPosMap(int[,] map)
+        private static Vector2[,] GetRealWorldPosMap(int[,] map)
         {
             var realWorldPos = new Vector2[map.GetLength(0), map.GetLength(1)];
             for (var row = 0; row < map.GetLength(0); row++)
             {
                 for (var column = 0; column < map.GetLength(1); column++)
                 {
-                    var pos = position(map, column, row);
+                    var pos = Position(map, column, row);
                     realWorldPos[row, column] = pos;
                 }
             }
@@ -96,7 +96,7 @@ namespace _PacmanGame.Scripts.Map
             return duplicatedMap;
         }
 
-        private static Vector2 position(int[,] data, int column, int row)
+        private static Vector2 Position(int[,] data, int column, int row)
         {
             var yOffset = data.GetLength(0) * TILE_OFFSET / 2;
             var xOffset = data.GetLength(1) * TILE_OFFSET / 2;
@@ -134,6 +134,7 @@ namespace _PacmanGame.Scripts.Map
                     item.transform.localPosition = realWorldPos[row, column];
                 }
             }
+
             return pointsCount;
         }
 

@@ -9,11 +9,11 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
     [RequireComponent(typeof(BaseGhostState))]
     public abstract class BaseGhost : Actors
     {
-        public Vector2 scatterPoint { get; set; }
+        public Vector2 ScatterPoint { get; set; }
 
-        private readonly Vector3 GhostHousePoint = Vector3.zero;
+        private readonly Vector3 ghostHousePoint = Vector3.zero;
 
-        protected BaseGhostState ghostState;
+        protected BaseGhostState GhostState;
         protected static Pacman PacmanTarget;
 
         private bool choosedPath = false;
@@ -23,7 +23,7 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
         protected new virtual void Awake()
         {
             base.Awake();
-            ghostState = GetComponent<BaseGhostState>();
+            GhostState = GetComponent<BaseGhostState>();
             if ( PacmanTarget != null )
             {
                 return;
@@ -39,25 +39,25 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
         protected new void FixedUpdate()
         {
             base.FixedUpdate();
-            
+
             if ( LevelManager.Instance.CurrentGameState.Equals(LevelManager.GameState.Pause) )
             {
                 return;
             }
 
-            if ( ghostState.CurrentState.Equals(GhostStates.LeavingHouse) )
+            if ( GhostState.CurrentState.Equals(GhostStates.LeavingHouse) )
             {
                 LeaveHouse();
             }
 
-            if ( !currentNode.IsIntersection )
+            if ( !CurrentNode.IsIntersection )
             {
                 choosedPath = false;
                 return;
             }
 
 
-            if ( !currentNode.IsIntersection || choosedPath && ghostState.IsInUnstableStates() )
+            if ( !CurrentNode.IsIntersection || choosedPath && GhostState.IsInUnstableState() )
             {
                 return;
             }
@@ -75,16 +75,17 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
         public override void ResetActor()
         {
             base.ResetActor();
-            ghostState.ResetActor();
+            GhostState.ResetActor();
             choosedPath = false;
-            animator.SetBool("IsAfraid", false);
-            animator.SetBool("AfraidLowTime", false);
-            animator.SetBool("Dead", false);
+            Animator.SetBool("IsAfraid", false);
+            Animator.SetBool("AfraidLowTime", false);
+            Animator.SetBool("Dead", false);
         }
 
         protected override void GetCurrentNode()
         {
-            if ( ghostState.changedStateTimer > 0 && previousNode.NodeIntersections != null  && !ghostState.CurrentState.Equals(GhostStates.LeavingHouse))
+            if ( GhostState.ChangedStateTimer > 0 && PreviousNode.NodeIntersections != null &&
+                 !GhostState.CurrentState.Equals(GhostStates.LeavingHouse) )
             {
                 return;
             }
@@ -103,7 +104,7 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
                     continue;
                 }
 
-                if ( node == previousNode )
+                if ( node == PreviousNode )
                 {
                     continue;
                 }
@@ -117,17 +118,17 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
 
         protected Vector2 GetNodeDirection(Node node)
         {
-            if ( node == currentNode.NodeIntersections.Left )
+            if ( node == CurrentNode.NodeIntersections.Left )
             {
                 return Vector2.left;
             }
 
-            if ( node == currentNode.NodeIntersections.Right )
+            if ( node == CurrentNode.NodeIntersections.Right )
             {
                 return Vector2.right;
             }
 
-            if ( node == currentNode.NodeIntersections.Up )
+            if ( node == CurrentNode.NodeIntersections.Up )
             {
                 return Vector2.up;
             }
@@ -135,9 +136,9 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
             return Vector2.down;
         }
 
-        protected virtual void Intersection()
+        private void Intersection()
         {
-            switch (ghostState.CurrentState)
+            switch (GhostState.CurrentState)
             {
                 case GhostStates.Afraid:
                     AfraidIntersection();
@@ -164,18 +165,18 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
 
         private void AfraidIntersection()
         {
-            var intersections = currentNode.NodeIntersections;
-            var chosedNode = ChooseNode(PseudoRandomFloat, intersections.Left, intersections.Down, intersections.Right,
+            var intersections = CurrentNode.NodeIntersections;
+            var chosedNode = ChooseNode(RandomFloat, intersections.Left, intersections.Down, intersections.Right,
                 intersections.Up);
             var direction = GetNodeDirection(chosedNode);
             ChangeDirection(direction);
         }
 
-        private float PseudoRandomFloat(Node node) => Random.value;
+        private static float RandomFloat(Node node) => Random.value;
 
         private void ScatterIntersection()
         {
-            var intersections = currentNode.NodeIntersections;
+            var intersections = CurrentNode.NodeIntersections;
             var chosedNode = ChooseNode(NodeDistanceFromScatterPoint, intersections.Left, intersections.Down,
                 intersections.Right, intersections.Up);
             var direction = GetNodeDirection(chosedNode);
@@ -184,25 +185,25 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
 
         private void DeadIntersection()
         {
-            if ( previousNode.ThinWall )
+            if ( PreviousNode.ThinWall )
             {
-                ghostState.ChangeState(GhostStates.LeavingHouse);
+                GhostState.ChangeState(GhostStates.LeavingHouse);
             }
 
-            var intersections = currentNode.NodeIntersections;
+            var intersections = CurrentNode.NodeIntersections;
             var chosedNode = ChooseNode(NodeDistanceFromGhostHouse, intersections.Left, intersections.Down,
                 intersections.Right, intersections.Up);
             var direction = GetNodeDirection(chosedNode);
             ChangeDirection(direction);
         }
 
-        private float NodeDistanceFromGhostHouse(Node node) => Vector2.Distance(node.Position, GhostHousePoint);
+        private float NodeDistanceFromGhostHouse(Node node) => Vector2.Distance(node.Position, ghostHousePoint);
 
         private void LeaveHouse()
         {
-            if ( currentNode.ThinWall )
+            if ( CurrentNode.ThinWall )
             {
-                ghostState.NextState();
+                GhostState.NextState();
             }
 
             if ( IsDirectionAvailable(Vector2.up) )
@@ -220,7 +221,7 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
             ChangeDirection(Vector2.right);
         }
 
-        protected float NodeDistanceFromScatterPoint(Node node) => Vector2.Distance(node.Position, scatterPoint);
+        protected float NodeDistanceFromScatterPoint(Node node) => Vector2.Distance(node.Position, ScatterPoint);
 
         private void OnTriggerEnter2D(Collider2D other)
         {
@@ -229,36 +230,36 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
                 return;
             }
 
-            if ( ghostState.CurrentState.Equals(GhostStates.Dead) )
+            if ( GhostState.CurrentState.Equals(GhostStates.Dead) )
             {
                 return;
             }
 
-            TouchGhost?.Invoke(ghostState.CurrentState);
-            if ( ghostState.CurrentState.Equals(GhostStates.Afraid) )
+            TouchGhost?.Invoke(GhostState.CurrentState);
+            if ( GhostState.CurrentState.Equals(GhostStates.Afraid) )
             {
-                ghostState.ChangeState(GhostStates.Dead);
+                GhostState.ChangeState(GhostStates.Dead);
             }
         }
 
         public void ResetSpeed()
         {
-            currentSpeed = baseSpeed;
+            CurrentSpeed = BaseSpeed;
         }
 
         public void MultiplySpeed(float multiplier)
         {
-            currentSpeed = baseSpeed * multiplier;
+            CurrentSpeed = BaseSpeed * multiplier;
         }
 
         public void ReverseDirection()
         {
-            if ( previousNode.NodeIntersections == null  || (previousNode.ThinWall || currentNode.ThinWall))
+            if ( PreviousNode.NodeIntersections == null || PreviousNode.ThinWall || CurrentNode.ThinWall )
             {
                 return;
             }
 
-            ChangeDirection(GetNodeDirection(previousNode));
+            ChangeDirection(GetNodeDirection(PreviousNode));
         }
     }
 }

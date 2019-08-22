@@ -12,28 +12,28 @@ namespace _PacmanGame.Scripts.Actors.Ghosts.Behaviours
         protected override void Awake()
         {
             base.Awake();
-            scatterPoint = InkyScatterPoint;
+            ScatterPoint = InkyScatterPoint;
         }
 
         protected override void Start()
         {
             base.Start();
             blinky = FindObjectOfType<Blinky>();
-            currentDirection = Vector2.right;
-            ghostState.InitializeLockedTimer();
+            CurrentDirection = Vector2.right;
+            GhostState.InitializeLockedTimer();
         }
-        
+
         public override void ResetActor()
         {
             base.ResetActor();
-            currentDirection = Vector2.right;
-            ghostState.InitializeLockedTimer();
+            CurrentDirection = Vector2.right;
+            GhostState.InitializeLockedTimer();
         }
 
 
         protected override void ChasingIntersection()
         {
-            var intersections = currentNode.NodeIntersections;
+            var intersections = CurrentNode.NodeIntersections;
             var node = ChooseNode(NodeDistanceFromBlinkyAndPacman, intersections.Left, intersections.Down,
                 intersections.Right, intersections.Up);
             var direction = GetNodeDirection(node);
@@ -43,7 +43,7 @@ namespace _PacmanGame.Scripts.Actors.Ghosts.Behaviours
         private float NodeDistanceFromBlinkyAndPacman(Node node)
         {
             var aheadOfPacman = (Vector2) (PacmanTarget.transform.position - blinky.transform.position) +
-                                PacmanTarget.currentDirection * 10 * MapGenerator.TILE_OFFSET;
+                                PacmanTarget.CurrentDirection * 10 * MapGenerator.TILE_OFFSET;
             return Vector2.Distance(node.Position, aheadOfPacman);
         }
     }

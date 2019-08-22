@@ -7,14 +7,14 @@ namespace _PacmanGame.Scripts.Actors
     [RequireComponent(typeof(Collider2D))]
     public abstract class Actors : MonoBehaviour
     {
-        public Node previousNode;
-        public Node currentNode;
-        public Node nextNode;
+        public Node PreviousNode;
+        public Node CurrentNode;
+        public Node NextNode;
 
-        public float baseSpeed;
-        protected float currentSpeed;
-        public Vector2 currentDirection = Vector2.up;
-        public Animator animator;
+        public float BaseSpeed;
+        protected float CurrentSpeed;
+        public Vector2 CurrentDirection = Vector2.up;
+        public Animator Animator;
 
         private Rigidbody2D rb2D;
 
@@ -23,21 +23,21 @@ namespace _PacmanGame.Scripts.Actors
         protected virtual void Awake()
         {
             rb2D = GetComponent<Rigidbody2D>();
-            currentNode = LevelManager.Instance.LevelGrid.NodeFromWorldPostiion(transform.position);
+            CurrentNode = LevelManager.Instance.LevelGrid.NodeFromWorldPostiion(transform.position);
         }
 
         protected virtual void Start()
         {
-            animator.SetFloat("DirX", currentDirection.x);
-            animator.SetFloat("DirY", currentDirection.y);
-            currentSpeed = baseSpeed;
+            Animator.SetFloat("DirX", CurrentDirection.x);
+            Animator.SetFloat("DirY", CurrentDirection.y);
+            CurrentSpeed = BaseSpeed;
         }
 
         public virtual void ResetActor()
         {
             transform.localPosition = StartingNode.Position;
-            currentNode = StartingNode;
-            currentSpeed = baseSpeed;
+            CurrentNode = StartingNode;
+            CurrentSpeed = BaseSpeed;
         }
 
         protected virtual void FixedUpdate()
@@ -46,6 +46,7 @@ namespace _PacmanGame.Scripts.Actors
             {
                 return;
             }
+
             GetCurrentNode();
             SetNextNode();
             MoveActor();
@@ -53,14 +54,14 @@ namespace _PacmanGame.Scripts.Actors
 
         public virtual void ChangeDirection(Vector2 direction)
         {
-            if ( direction == currentDirection )
+            if ( direction == CurrentDirection )
             {
                 return;
             }
 
-            currentDirection = direction;
-            animator.SetFloat("DirX", direction.x);
-            animator.SetFloat("DirY", direction.y);
+            CurrentDirection = direction;
+            Animator.SetFloat("DirX", direction.x);
+            Animator.SetFloat("DirY", direction.y);
         }
 
         protected bool IsDirectionAvailable(Vector2 direction) => GetNodeInDirection(direction) != null;
@@ -69,27 +70,26 @@ namespace _PacmanGame.Scripts.Actors
         {
             if ( direction == Vector2.left )
             {
-                return currentNode.NodeIntersections.Left;
+                return CurrentNode.NodeIntersections.Left;
             }
 
             if ( direction == Vector2.right )
             {
-                return currentNode.NodeIntersections.Right;
+                return CurrentNode.NodeIntersections.Right;
             }
 
             if ( direction == Vector2.up )
             {
-                return currentNode.NodeIntersections.Up;
+                return CurrentNode.NodeIntersections.Up;
             }
 
-            return currentNode.NodeIntersections.Down;
+            return CurrentNode.NodeIntersections.Down;
         }
-
 
         protected virtual void GetCurrentNode()
         {
             var newNode = LevelManager.Instance.LevelGrid.NodeFromWorldPostiion(transform.position);
-            if ( Equals(newNode, currentNode) )
+            if ( Equals(newNode, CurrentNode) )
             {
                 return;
             }
@@ -99,33 +99,33 @@ namespace _PacmanGame.Scripts.Actors
                 StartingNode = newNode;
             }
 
-            previousNode = currentNode;
-            currentNode = newNode;
+            PreviousNode = CurrentNode;
+            CurrentNode = newNode;
         }
 
         private void SetNextNode()
         {
-            nextNode = GetNodeInDirection(currentDirection);
+            NextNode = GetNodeInDirection(CurrentDirection);
         }
 
         private void MoveActor()
         {
-            if ( currentNode.IsTeleport )
+            if ( CurrentNode.IsTeleport )
             {
-                var teleportLeft = currentNode.isLeft && currentDirection == Vector2.left;
-                var teleportRight = !currentNode.isLeft && currentDirection == Vector2.right;
+                var teleportLeft = CurrentNode.IsLeft && CurrentDirection == Vector2.left;
+                var teleportRight = !CurrentNode.IsLeft && CurrentDirection == Vector2.right;
                 if ( teleportLeft || teleportRight )
                 {
-                    transform.position = currentNode.TwinTeleport.Position;
+                    transform.position = CurrentNode.TwinTeleport.Position;
                 }
             }
 
-            var target = nextNode ?? currentNode;
+            var target = NextNode ?? CurrentNode;
 
             var movePosition = transform.localPosition;
 
-            movePosition.x = Mathf.MoveTowards(transform.position.x, target.Position.x, currentSpeed * Time.deltaTime);
-            movePosition.y = Mathf.MoveTowards(transform.position.y, target.Position.y, currentSpeed * Time.deltaTime);
+            movePosition.x = Mathf.MoveTowards(transform.position.x, target.Position.x, CurrentSpeed * Time.deltaTime);
+            movePosition.y = Mathf.MoveTowards(transform.position.y, target.Position.y, CurrentSpeed * Time.deltaTime);
 
             rb2D.MovePosition(movePosition);
         }

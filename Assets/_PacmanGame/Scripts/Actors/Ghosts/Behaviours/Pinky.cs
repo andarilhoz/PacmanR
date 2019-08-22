@@ -10,35 +10,35 @@ namespace _PacmanGame.Scripts.Actors.Ghosts.Behaviours
         protected override void Awake()
         {
             base.Awake();
-            scatterPoint = PinkyScatterPoint;
+            ScatterPoint = PinkyScatterPoint;
         }
 
         protected override void Start()
         {
             base.Start();
-            ghostState.InitializeLockedTimer();
+            GhostState.InitializeLockedTimer();
         }
-        
+
         public override void ResetActor()
         {
             base.ResetActor();
-            ghostState.InitializeLockedTimer();
+            GhostState.InitializeLockedTimer();
         }
 
 
         protected override void ChasingIntersection()
         {
-            var intersections = currentNode.NodeIntersections;
+            var intersections = CurrentNode.NodeIntersections;
             var node = ChooseNode(NodeDistanceFromAheadOfPacman, intersections.Left, intersections.Down,
                 intersections.Right, intersections.Up);
             var direction = GetNodeDirection(node);
             ChangeDirection(direction);
         }
 
-        private float NodeDistanceFromAheadOfPacman(Node node)
+        private static float NodeDistanceFromAheadOfPacman(Node node)
         {
             var aheadOfPacman = (Vector2) PacmanTarget.transform.position +
-                                PacmanTarget.currentDirection * 4 * MapGenerator.TILE_OFFSET;
+                                PacmanTarget.CurrentDirection * 4 * MapGenerator.TILE_OFFSET;
             return Vector2.Distance(node.Position, aheadOfPacman);
         }
     }

@@ -6,7 +6,7 @@ namespace _PacmanGame.Scripts.InputSystem
     public class KeyboardInput : MonoBehaviour, IInputControll
     {
         public event Action<Vector2> OnInput;
-        
+
         #region Singleton
 
         private static KeyboardInput instance;
