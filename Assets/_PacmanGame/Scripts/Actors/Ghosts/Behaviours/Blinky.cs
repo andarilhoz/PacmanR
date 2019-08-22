@@ -17,6 +17,13 @@ namespace _PacmanGame.Scripts.Actors.Ghosts.Behaviours
             base.Start();
             ghostState.NextState();
         }
+        
+        public override void ResetActor()
+        {
+            base.ResetActor();
+            scatterPoint = BlinkyScatterPoint;
+            ghostState.NextState();
+        }
 
         protected override void ChasingIntersection()
         {

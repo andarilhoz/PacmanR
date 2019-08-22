@@ -5,11 +5,12 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
     [RequireComponent(typeof(BaseGhost))]
     public class BaseGhostState : MonoBehaviour
     {
-        public GhostStates CurrentStates;
+        public GhostStates CurrentState;
         public float lockedTime;
         
         private GhostStates previousStates;
         private float modeTimer;
+        private float initialModeTimer;
         private int stateIteraction = 0;
 
         public float changedStateTimer { get; set; }
@@ -20,6 +21,9 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
         private const float AFRAID_TIME = 6f;
 
         private BaseGhost baseGhost;
+        private SpriteRenderer spriteRender;
+
+        private GhostStates initialState;
 
         private readonly (GhostStates, float)[] StateTimers =
         {
@@ -31,11 +35,15 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
         private void Awake()
         {
             baseGhost = GetComponent<BaseGhost>();
+            spriteRender = GetComponent<SpriteRenderer>();
         }
 
         private void Start()
         {
             Pacman.EatPowerDot += () => ChangeState(GhostStates.Afraid);
+            Pacman.Die += () => spriteRender.enabled = false;
+            initialModeTimer = modeTimer;
+            initialState = CurrentState;
         }
 
         private void Update()
@@ -47,17 +55,26 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
             UpdateStateTimer();
         }
 
+        public void ResetActor()
+        {
+            CurrentState = initialState;
+            previousStates = GhostStates.InHouse;
+            stateIteraction = 0;
+            modeTimer = initialModeTimer;
+            spriteRender.enabled = true;
+        }
+
         public void InitializeLockedTimer()
         {
             modeTimer = lockedTime;
         }
 
         public bool IsInUnstableStates() =>
-            CurrentStates.Equals(GhostStates.Chasing) || CurrentStates.Equals(GhostStates.Afraid);
+            CurrentState.Equals(GhostStates.Chasing) || CurrentState.Equals(GhostStates.Afraid);
 
         public void NextState()
         {
-            if ( CurrentStates.Equals(GhostStates.InHouse) )
+            if ( CurrentState.Equals(GhostStates.InHouse) )
             {
                 ChangeState(GhostStates.LeavingHouse);
                 return;
@@ -76,7 +93,7 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
 
         public void ChangeState(GhostStates newStates)
         {
-            if ( newStates == CurrentStates )
+            if ( newStates == CurrentState )
             {
                 if ( !newStates.Equals(GhostStates.Afraid) )
                 {
@@ -89,12 +106,12 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
             }
 
             if ( newStates.Equals(GhostStates.Afraid) &&
-                 (CurrentStates.Equals(GhostStates.Dead) || CurrentStates.Equals(GhostStates.LeavingHouse)) )
+                 (CurrentState.Equals(GhostStates.Dead) || CurrentState.Equals(GhostStates.LeavingHouse)) )
             {
                 return;
             }
 
-            switch (CurrentStates)
+            switch (CurrentState)
             {
                 case GhostStates.Afraid:
                     baseGhost.animator.SetBool("IsAfraid", false);
@@ -132,18 +149,18 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
                     break;
             }
 
-            previousStates = CurrentStates;
-            CurrentStates = newStates;
+            previousStates = CurrentState;
+            CurrentState = newStates;
         }
         
         private bool InsideHouseStates()
         {
-            return CurrentStates.Equals( GhostStates.InHouse) || CurrentStates.Equals(GhostStates.LeavingHouse );
+            return CurrentState.Equals( GhostStates.InHouse) || CurrentState.Equals(GhostStates.LeavingHouse );
         }
 
         private void UpdateStateTimer()
         {
-            if ( CurrentStates.Equals(GhostStates.Afraid) && modeTimer < AFRAID_TIME * 0.3f )
+            if ( CurrentState.Equals(GhostStates.Afraid) && modeTimer < AFRAID_TIME * 0.3f )
             {
                 baseGhost.animator.SetBool("AfraidLowTime", true);
             }

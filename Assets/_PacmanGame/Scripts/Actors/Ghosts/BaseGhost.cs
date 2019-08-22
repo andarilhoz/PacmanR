@@ -45,7 +45,7 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
                 return;
             }
 
-            if ( ghostState.CurrentStates.Equals(GhostStates.LeavingHouse) )
+            if ( ghostState.CurrentState.Equals(GhostStates.LeavingHouse) )
             {
                 LeaveHouse();
             }
@@ -67,9 +67,24 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
             Intersection();
         }
 
+        private void OnDestroy()
+        {
+            TouchGhost = states => { };
+        }
+
+        public override void ResetActor()
+        {
+            base.ResetActor();
+            ghostState.ResetActor();
+            choosedPath = false;
+            animator.SetBool("IsAfraid", false);
+            animator.SetBool("AfraidLowTime", false);
+            animator.SetBool("Dead", false);
+        }
+
         protected override void GetCurrentNode()
         {
-            if ( ghostState.changedStateTimer > 0 && previousNode.NodeIntersections != null  && !ghostState.CurrentStates.Equals(GhostStates.LeavingHouse))
+            if ( ghostState.changedStateTimer > 0 && previousNode.NodeIntersections != null  && !ghostState.CurrentState.Equals(GhostStates.LeavingHouse))
             {
                 return;
             }
@@ -122,7 +137,7 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
 
         protected virtual void Intersection()
         {
-            switch (ghostState.CurrentStates)
+            switch (ghostState.CurrentState)
             {
                 case GhostStates.Afraid:
                     AfraidIntersection();
@@ -214,13 +229,13 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
                 return;
             }
 
-            if ( ghostState.CurrentStates.Equals(GhostStates.Dead) )
+            if ( ghostState.CurrentState.Equals(GhostStates.Dead) )
             {
                 return;
             }
 
-            TouchGhost?.Invoke(ghostState.CurrentStates);
-            if ( ghostState.CurrentStates.Equals(GhostStates.Afraid) )
+            TouchGhost?.Invoke(ghostState.CurrentState);
+            if ( ghostState.CurrentState.Equals(GhostStates.Afraid) )
             {
                 ghostState.ChangeState(GhostStates.Dead);
             }
@@ -238,7 +253,7 @@ namespace _PacmanGame.Scripts.Actors.Ghosts
 
         public void ReverseDirection()
         {
-            if ( previousNode.NodeIntersections == null )
+            if ( previousNode.NodeIntersections == null  || (previousNode.ThinWall || currentNode.ThinWall))
             {
                 return;
             }

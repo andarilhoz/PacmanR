@@ -1,7 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using _PacmanGame.Scripts.Actors;
 using _PacmanGame.Scripts.Canvas.Fadeout;
+using _PacmanGame.Scripts.Canvas.Score;
 using _PacmanGame.Scripts.Map;
 using Grid = _PacmanGame.Scripts.Map.Grid;
 
@@ -28,6 +32,14 @@ namespace _PacmanGame.Scripts
         private int flashTimes = 0;
 
         private bool wonGame = false;
+        private bool looseGame = false;
+
+        private int lives = 2;
+        private int maxLives = 5;
+
+        private Actors.Actors[] actors;
+
+        public List<GameObject> pacmanLivesImages;
 
         #region Singleton
 
@@ -61,16 +73,65 @@ namespace _PacmanGame.Scripts
             Initialize();
             InstructionsFadeout.StartGame += () => CurrentGameState = GameState.Playing;
             Pacman.EatDot += PacmanDotEat;
+            Pacman.Die += async () =>
+            {
+                CurrentGameState = GameState.Pause;
+                await Task.Delay(TimeSpan.FromSeconds(1.5f));
+                Die();
+            };
+            ScoreManager.ExtraLife += GainLive;
             wallMaterialOriginalColor = wallMaterial.color;
+
+            actors = FindObjectsOfType<Actors.Actors>();
+            UpdateLives(lives);
         }
 
-        private void Update()
+        private void GainLive()
         {
-            if ( !wonGame )
+            if ( lives >= maxLives )
             {
                 return;
             }
+            
+            UpdateLives(++lives);
+        }
 
+        private void UpdateLives(int currentLives)
+        {
+            pacmanLivesImages.ForEach(l => l.SetActive(false));
+            for (var i = 0; i < currentLives; i++)
+            {
+                pacmanLivesImages[i].SetActive(true);    
+            }
+        }
+
+        private async void Update()
+        {
+            if ( wonGame )
+            {
+                WonGameAnimation();
+                return;
+            }
+        }
+
+        private void Die()
+        {
+            if ( lives > 0 )
+            {
+                lives--;
+                UpdateLives(lives);
+                foreach (var actor in actors)
+                {
+                    actor.ResetActor();
+                }
+                CurrentGameState = GameState.Playing;
+                return;
+            }
+            ResetGame();
+        }
+
+        private void WonGameAnimation()
+        {
             if ( flashTimer <= 0 )
             {
                 FlashWallMaterial();
@@ -79,13 +140,12 @@ namespace _PacmanGame.Scripts
             }
 
             flashTimer -= Time.deltaTime;
-
         }
 
         private void PacmanDotEat()
         {
             eatenDots++;
-
+            
             if ( eatenDots < maxDots )
             {
                 return;

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using _PacmanGame.Scripts.Actors.Ghosts;
 using _PacmanGame.Scripts.Canvas.Score;
@@ -11,9 +12,11 @@ namespace _PacmanGame.Scripts.Actors
         public bool isAlive;
 
         public static event Action EatPowerDot;
+        public static event Action Die;
         public static event Action EatDot;
-        public static event Action<int> AddScore;
+        public static event Action EatGhost;
         public static event Action EatFruit;
+        public static event Action<int> AddScore;
 
         public float ghostEatComboTimer = 2f;
         private float comboTimer = 0;
@@ -48,6 +51,23 @@ namespace _PacmanGame.Scripts.Actors
             base.FixedUpdate();
             TryAgainChangeDirection();
         }
+        
+        private void OnDestroy()
+        {
+            EatPowerDot = () => { };
+            Die = () => { };
+            EatDot = () => { };
+            EatGhost = () => { };
+            EatFruit = () => { };
+            AddScore = (n) => { };
+        }
+
+        public override void ResetActor()
+        {
+            base.ResetActor();
+            animator.SetBool("IsAlive", true);
+            ChangeDirection(Vector2.left);
+        }
 
         private void ComboTimerChecker()
         {
@@ -65,22 +85,26 @@ namespace _PacmanGame.Scripts.Actors
             comboTimer -= Time.deltaTime;
         }
 
-        private void TouchedGhost(GhostStates ghostStates)
+        private async void TouchedGhost(GhostStates ghostStates)
         {
             if ( ghostStates.Equals(GhostStates.Afraid) )
             {
-                EatGhost();
+                EatGhostCombo();
                 return;
             }
 
-            // TODO do death
+            LevelManager.Instance.CurrentGameState = LevelManager.GameState.Pause;
+            await Task.Delay(TimeSpan.FromSeconds(.5f));
+            Die?.Invoke();
+            animator.SetBool("IsAlive", false);
             Debug.Log("Ouch i'm dead");
         }
 
-        private void EatGhost()
+        private void EatGhostCombo()
         {
             comboTimer = ghostEatComboTimer;
             comboCounter++;
+            EatGhost?.Invoke();
             ScoreManager.Instance.SetComboText(comboValues[comboCounter - 1].ToString(), transform.position, true);
             AddScore?.Invoke(comboValues[comboCounter - 1]);
         }

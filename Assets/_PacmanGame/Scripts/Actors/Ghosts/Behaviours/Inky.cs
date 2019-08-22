@@ -22,6 +22,14 @@ namespace _PacmanGame.Scripts.Actors.Ghosts.Behaviours
             currentDirection = Vector2.right;
             ghostState.InitializeLockedTimer();
         }
+        
+        public override void ResetActor()
+        {
+            base.ResetActor();
+            currentDirection = Vector2.right;
+            ghostState.InitializeLockedTimer();
+        }
+
 
         protected override void ChasingIntersection()
         {

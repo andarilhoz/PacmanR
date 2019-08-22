@@ -18,6 +18,7 @@ namespace _PacmanGame.Scripts.Actors
 
         private Rigidbody2D rb2D;
 
+        public Node StartingNode;
 
         protected virtual void Awake()
         {
@@ -29,6 +30,13 @@ namespace _PacmanGame.Scripts.Actors
         {
             animator.SetFloat("DirX", currentDirection.x);
             animator.SetFloat("DirY", currentDirection.y);
+            currentSpeed = baseSpeed;
+        }
+
+        public virtual void ResetActor()
+        {
+            transform.localPosition = StartingNode.Position;
+            currentNode = StartingNode;
             currentSpeed = baseSpeed;
         }
 
@@ -84,6 +92,11 @@ namespace _PacmanGame.Scripts.Actors
             if ( Equals(newNode, currentNode) )
             {
                 return;
+            }
+
+            if ( StartingNode?.NodeIntersections == null )
+            {
+                StartingNode = newNode;
             }
 
             previousNode = currentNode;

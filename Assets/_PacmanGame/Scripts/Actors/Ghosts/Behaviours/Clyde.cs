@@ -20,6 +20,12 @@ namespace _PacmanGame.Scripts.Actors.Ghosts.Behaviours
             base.Start();
             ghostState.InitializeLockedTimer();
         }
+        
+        public override void ResetActor()
+        {
+            base.ResetActor();
+            ghostState.InitializeLockedTimer();
+        }
 
         protected override void ChasingIntersection()
         {

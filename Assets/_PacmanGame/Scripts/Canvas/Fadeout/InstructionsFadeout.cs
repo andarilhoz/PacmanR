@@ -13,11 +13,12 @@ namespace _PacmanGame.Scripts.Canvas.Fadeout
         public Image fadeImage;
 
         public static event Action StartGame;
+        public static event Action StartIntro;
 
         private const string KEYBOARD_INPUT_DESCRIPTION = "Pressione uma seta para inciar";
         private const string TOUCH_INPUT_DESCRIPTION = "Deslize para um lado para inciar";
 
-        private const float TIMER_PAUSE = 3f;
+        private const float TIMER_PAUSE = 5f;
         private float timerCountDown;
 
         private bool fading = false;
@@ -30,10 +31,11 @@ namespace _PacmanGame.Scripts.Canvas.Fadeout
             if ( Application.platform.Equals(RuntimePlatform.Android) )
             {
                 description.text = TOUCH_INPUT_DESCRIPTION;
-                return;
             }
-
-            description.text = KEYBOARD_INPUT_DESCRIPTION;
+            else
+            {
+                description.text = KEYBOARD_INPUT_DESCRIPTION;
+            }
 
             timerCountDown = TIMER_PAUSE;
 
@@ -45,6 +47,12 @@ namespace _PacmanGame.Scripts.Canvas.Fadeout
         {
             FadeIn();
             CountDown();
+        }
+
+        private void OnDestroy()
+        {
+            StartGame = () => { };
+            StartIntro = () => { };
         }
 
         private void CountDown()
@@ -79,7 +87,7 @@ namespace _PacmanGame.Scripts.Canvas.Fadeout
             }
 
             fading = true;
-
+            StartIntro?.Invoke();
             description.gameObject.SetActive(false);
             Timer.gameObject.SetActive(true);
 
